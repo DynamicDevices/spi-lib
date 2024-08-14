@@ -81,3 +81,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(seamless_dev_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
 	target_link_libraries(seamless_dev_spi PUBLIC pthread)
 endif ()
+
+# installation
+install(TARGETS seamless_dev_spi DESTINATION bin)
