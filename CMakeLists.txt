@@ -24,7 +24,7 @@ file(GLOB app_main_src
 
 add_library(app_main_lib STATIC ${app_main_src})
 target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj)
-	
+
 file(GLOB app_framework_src
 		public/interface/*.h
 		modules/app/framework/*.c modules/app/framework/*.h
@@ -32,7 +32,7 @@ file(GLOB app_framework_src
 
 add_library(app_framework_lib STATIC ${app_framework_src})
 target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base_obj)
-	
+
 file(GLOB app_stump_src
 		public/interface/*.h
 		modules/record/plaintext/*.c modules/record/plaintext/*.h
@@ -76,7 +76,6 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_library(lib_dev_spi STATIC ${lib_dev_spi_src})
 	target_link_libraries(lib_dev_spi PUBLIC interface_app interface_direct)
 
-	
 	add_executable(seamless_dev_spi ${app_main_src})
 	target_link_libraries(seamless_dev_spi PUBLIC app_stump_lib)
 	target_link_libraries(seamless_dev_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
