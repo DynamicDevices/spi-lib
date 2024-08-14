@@ -42,7 +42,7 @@ const uint32_t BIG_MAX_BUF = 3*MAX_BUF;
 spi_t spi = {0};
 gpio_t gpio_int = {0};
 gpio_t gpio_rst = {0};
-char const* spi_dev = "/dev/spidev0.0";
+char const* spi_dev = "/dev/spidev1.0";
 
 /*******************************************************************************
  * Local functions
