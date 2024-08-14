@@ -52,13 +52,13 @@ char const* spi_dev = "/dev/spidev1.0";
  
  int32_t bgt60_platform_init()
  {
-    int status = gpio_init(&gpio_int, IMX_GPIO_NR(4, 28), 0);
+    int status = gpio_init(&gpio_int, IMX_GPIO_PIN(4, 28), 0);
     if(status < 0) {
         rep_err("Failed init interrupt gpio (%d) \n", status);
         return status;
     }
 
-    status = gpio_init(&gpio_rst, IMX_GPIO_NR(4, 29), 1);
+    status = gpio_init(&gpio_rst, IMX_GPIO_PIN(4, 29), 1);
     if(status < 0) {
         rep_err("Failed init reset gpio (%d)\n", status);
         return status;
