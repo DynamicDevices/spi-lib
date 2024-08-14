@@ -12,6 +12,9 @@
 mkdir build
 cd build && cmake ..
 make
+<<<<<<< HEAD
 sudo make install
+=======
+>>>>>>> a081386 (Update README with initial build notes)
 ```
 
