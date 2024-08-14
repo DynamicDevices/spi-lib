@@ -37,6 +37,8 @@
 * Global Variables
 *******************************************************************************/
 
+#define IMX_GPIO_NR(bank, pin) (480 - (bank * 32) + (pin & 0x1f))
+
 const uint32_t MAX_BUF = 4096;
 const uint32_t BIG_MAX_BUF = 3*MAX_BUF;
 spi_t spi = {0};
@@ -50,13 +52,13 @@ char const* spi_dev = "/dev/spidev1.0";
  
  int32_t bgt60_platform_init()
  {
-    int status = gpio_init(&gpio_int, 18, 0);
+    int status = gpio_init(&gpio_int, IMX_GPIO_NR(4, 28), 0);
     if(status < 0) {
         rep_err("Failed init interrupt gpio (%d) \n", status);
         return status;
     }
 
-    status = gpio_init(&gpio_rst, 17, 1);
+    status = gpio_init(&gpio_rst, IMX_GPIO_NR(4, 29), 1);
     if(status < 0) {
         rep_err("Failed init reset gpio (%d)\n", status);
         return status;
@@ -79,7 +81,7 @@ char const* spi_dev = "/dev/spidev1.0";
         rep_err("Failed read interrupt status (%d)\n", status);
         return status;
     }
-    
+
     return 0;
 }
 
@@ -124,11 +126,11 @@ int32_t bgt60_platform_spi_init(void)
 *
 *******************************************************************************/
 int32_t bgt60_platform_spi_transfer(uint8_t *tx_data, uint8_t *rx_data, uint32_t bytes)
-{ 
+{
     int32_t status = (int32_t)spi_transfer(&spi, rx_data, tx_data, bytes);
     if(status < 0)
         return status;
-    
+
     return 0;
 }
 
