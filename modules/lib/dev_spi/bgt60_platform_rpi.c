@@ -105,7 +105,7 @@ int32_t bgt60_platform_deinit()
 *******************************************************************************/
 int32_t bgt60_platform_spi_init(void)
 {
-  
+
     int status = spi_open(spi_dev, &spi);
 
     if(status == 0)
