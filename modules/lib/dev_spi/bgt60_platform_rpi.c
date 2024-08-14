@@ -37,7 +37,7 @@
 * Global Variables
 *******************************************************************************/
 
-#define IMX_GPIO_NR(bank, pin) (480 - (bank * 32) + (pin & 0x1f))
+#define IMX_GPIO_PIN(bank, pin) ((bank * 32) + (pin & 0x1f))
 
 const uint32_t MAX_BUF = 4096;
 const uint32_t BIG_MAX_BUF = 3*MAX_BUF;
