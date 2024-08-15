@@ -39,8 +39,21 @@
 
 #define IMX_GPIO_PIN(bank, pin) ((bank * 32) + (pin & 0x1f))
 
+#define BANK_RST 4
+#define BANK_IRQ 4
+
+#define PIN_RST 28
+#define PIN_IRQ 29
+
+#define INPUT 0
+#define OUTPUT 1
+
+#define LO 0
+#define HI 1
+
 const uint32_t MAX_BUF = 4096;
-const uint32_t BIG_MAX_BUF = 3*MAX_BUF;
+const uint32_t BIG_MAX_BUF = 3 * MAX_BUF;
+
 spi_t spi = {0};
 gpio_t gpio_int = {0};
 gpio_t gpio_rst = {0};
@@ -52,21 +65,21 @@ char const* spi_dev = "/dev/spidev1.0";
  
  int32_t bgt60_platform_init()
  {
-    int status = gpio_init(&gpio_int, IMX_GPIO_PIN(4, 28), 0);
+    int status = gpio_init(&gpio_int, IMX_GPIO_PIN(BANK_IRQ, PIN_IRQ), INPUT);
     if(status < 0) {
-        rep_err("Failed init interrupt gpio (%d) \n", status);
+        rep_err("Failed init interrupt gpio pin (%d) \n", status);
         return status;
     }
 
-    status = gpio_init(&gpio_rst, IMX_GPIO_PIN(4, 29), 1);
+    status = gpio_init(&gpio_rst, IMX_GPIO_PIN(BANK_RST, PIN_RST), OUTPUT);
     if(status < 0) {
-        rep_err("Failed init reset gpio (%d)\n", status);
+        rep_err("Failed init reset gpio pin (%d)\n", status);
         return status;
     }
 
-    status = gpio_write(&gpio_rst, 1);
+    status = gpio_write(&gpio_rst, HI);
     if(status < 0) {
-        rep_err("Failed set rst gpio (%d)\n", status);
+        rep_err("Failed set reset gpio state (%d)\n", status);
         return status;
     }
 
