@@ -72,6 +72,7 @@ static uint32_t htonl(uint32_t x)
             ((x & 0x00ff0000UL) >> 8) |
             ((x & 0xff000000UL) >> 24));
 }
+
 int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
 {
     int32_t status;
@@ -79,7 +80,7 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
     uint32_t tmp;
     if ((dev == NULL) || (regs == NULL))
     {
-        rep_msg("DEV | regs NULL\n");    
+        rep_msg("DEV | regs NULL\n");
         return BGT60_STATUS_PARAM_ERROR;
     }
     dev->reset();
@@ -90,14 +91,14 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
         rep_msg( "error set freq\n");
         return status;
     }
-    
+
     status = bgt60_get_reg(dev, BGT60_REG_SFCTL, &chipid);
     if (status != 0)
     {
         rep_msg( "error getting spi/fifo ctrl\n");
         return status;
     }
-    
+
     status = bgt60_get_reg(dev, BGT60_REG_CHIP_ID, &chipid);
     if (chipid == BGT60TR13C_CHIPID)
         rep_msg("get status chipid %d  chip id : %08x BGT60TR13C/BGT60TR13D\n",status,chipid);
