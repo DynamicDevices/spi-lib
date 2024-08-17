@@ -69,7 +69,7 @@ int gpio_init(gpio_t* gpio, int channel, int direction)
          rep_err("Error setting edge gpio\n");
          return -1;
       }
-      write(fd, "rising", 7);
+      write(fd, "falling", 8);
       close(fd);
     }
 
