@@ -39,8 +39,8 @@
 
 #define IMX_GPIO_PIN(bank, pin) ((bank * 32) + (pin & 0x1f))
 
-#define BANK_RST 4
-#define BANK_IRQ 4
+#define BANK_RST 3
+#define BANK_IRQ 3
 
 #define PIN_RST 28
 #define PIN_IRQ 29
