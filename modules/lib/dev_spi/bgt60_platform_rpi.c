@@ -122,7 +122,7 @@ int32_t bgt60_platform_spi_init(void)
     int status = spi_open(spi_dev, &spi);
 
     if(status == 0)
-        status = spi_configure(&spi, 50000000, 8, 0);
+        status = spi_configure(&spi, 40000000, 8, 0);
 
     return status;
 }
