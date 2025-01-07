@@ -22,6 +22,10 @@ file(GLOB app_main_src
 	modules/app/main/*.c modules/app/main/*.h
 	)
 
+file(GLOB app_bridge_src
+	modules/app/bridge/*.c modules/app/bridge/*.h
+)
+	
 add_library(app_main_lib STATIC ${app_main_src})
 target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj)
 
@@ -80,7 +84,14 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(seamless_dev_spi PUBLIC app_stump_lib)
 	target_link_libraries(seamless_dev_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
 	target_link_libraries(seamless_dev_spi PUBLIC pthread)
+
+	add_executable(seamless_bridge_spi ${app_bridge_src})
+	target_link_libraries(seamless_bridge_spi PUBLIC app_stump_lib)
+	target_link_libraries(seamless_bridge_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
+	target_link_libraries(seamless_bridge_spi PUBLIC pthread)
+
 endif ()
 
 # installation
 install(TARGETS seamless_dev_spi DESTINATION bin)
+install(TARGETS seamless_bridge_spi DESTINATION bin)
