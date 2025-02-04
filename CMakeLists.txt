@@ -8,9 +8,6 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake;${CMAKE_MODULE_
 set(RDK_HAS_DEVICE_CONTROL FALSE)
 add_subdirectory("${STV_3RD_PARTY_DIR}/ersatzRDK" EXCLUDE_FROM_ALL)
 
-## Add protocol handler
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/stratula/protocol" EXCLUDE_FROM_ALL)
-
 ## determine the target platform
 include(TargetPlatform)
 detect_target_platform(TARGET_PLATFORM)
@@ -28,9 +25,9 @@ file(GLOB app_main_src
 file(GLOB app_bridge_src
 	modules/app/bridge/*.c modules/app/bridge/*.h
 )
-	
+
 add_library(app_main_lib STATIC ${app_main_src})
-target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj protocol_obj)
+target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj)
 
 file(GLOB app_framework_src
 		public/interface/*.h
@@ -88,10 +85,14 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	target_link_libraries(seamless_dev_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
 	target_link_libraries(seamless_dev_spi PUBLIC pthread)
 
+        ## Add protocol handler
+        add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/stratula/protocol" EXCLUDE_FROM_ALL)
+
 	add_executable(seamless_bridge_spi ${app_bridge_src})
 	target_link_libraries(seamless_bridge_spi PUBLIC app_stump_lib)
 	target_link_libraries(seamless_bridge_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
 	target_link_libraries(seamless_bridge_spi PUBLIC pthread)
+	target_link_libraries(seamless_bridge_spi PUBLIC protocol_obj)
 
 endif ()
 
