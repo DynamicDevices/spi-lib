@@ -14,6 +14,8 @@
 #include <impl/PlatformMemory.h>
 #include <universal/protocol/protocol_definitions.h>
 
+#warning Implement Requests IMemory
+
 /******************************************************************************/
 /*Macro Definitions ----------------------------------------------------------*/
 /******************************************************************************/
@@ -39,20 +41,29 @@
 /******************************************************************************/
 uint8_t Requests_IMemory_read(uint16_t wValue, uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
+#if 0
     const uint32_t address = ((wIndex << 16) | wValue);
 
     return PlatformMemory_read(address, wLength, payload);
+#else
+    return 0;
+#endif
 }
 
 uint8_t Requests_IMemory_write(uint16_t wValue, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
+#if 0
     const uint32_t address = ((wIndex << 16) | wValue);
 
     return PlatformMemory_write(address, wLength, payload);
+#else
+    return 0;
+#endif
 }
 
 uint8_t Requests_IMemory_stream(uint16_t wValue, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
+#if 0
     if (wLength != (sizeof(uint32_t) * 2))
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -63,6 +74,9 @@ uint8_t Requests_IMemory_stream(uint16_t wValue, uint16_t wIndex, uint16_t wLeng
     const uint32_t length  = ((uint32_t *)(uintptr_t)payload)[1];
 
     return PlatformMemory_stream(dstAddr, srcAddr, length);
+#else
+    return 0;
+#endif
 }
 
 /*  @} */
