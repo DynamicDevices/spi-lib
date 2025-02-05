@@ -55,25 +55,19 @@ volatile uint32_t SysTimer_s_uSysTickCounter = 0;
  * Functions
  *******************************************************************************/
 
-#warning Implemnt timer support
+#if 0
 
 void SysTimer_init(void)
 {
-#if 0
     // configure sys tick timer
     // -----------------------
     SysTick_Config(SystemCoreClock / TICK_INIT);
     NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), ISR_PRIORITY_SYSTIMER_IRQ, 0));
-#endif
 }
 
 uint32_t SysTimer_getTicks_per_us(uint16_t microseconds)
 {
-#if 0
     return (microseconds / TICK_TIME_MICROSECS);
-#else
-    return 0;
-#endif
 }
 
 // interrupt handlers must be linked in C style, otherwise the concept of weak definition in
@@ -81,4 +75,19 @@ uint32_t SysTimer_getTicks_per_us(uint16_t microseconds)
 void SysTick_Handler(void)
 {
     SysTimer_s_uSysTickCounter++;
+}
+
+#endif
+
+#include <unistd.h>
+#include <time.h>
+
+uint32_t SysTimer_getTime(void)
+{
+    struct timespec ts;
+    unsigned theTick = 0U;
+    clock_gettime( CLOCK_REALTIME, &ts );
+    theTick  = ts.tv_nsec / 1000000;
+    theTick += ts.tv_sec * 1000;
+    return theTick;
 }

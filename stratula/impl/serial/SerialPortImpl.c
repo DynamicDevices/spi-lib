@@ -31,9 +31,16 @@
 
 #include <platform/impl/SerialPortImpl.h>
 
+#include <stdio.h>
 #include <impl/chrono.h>
 #include <string.h>
 //#include <udi_cdc.h>
+
+#include <errno.h>
+#include <fcntl.h> 
+#include <string.h>
+#include <termios.h>
+#include <unistd.h>
 
 /******************************************************************************/
 /*Macro Definitions ----------------------------------------------------------*/
@@ -47,29 +54,84 @@
 /******************************************************************************/
 /*Private/Public Constants ---------------------------------------------------*/
 /******************************************************************************/
+const char *portname = "/tmp/ttySpiLib";
 
 /******************************************************************************/
 /*Private/Public Variables ---------------------------------------------------*/
 /******************************************************************************/
+int fd = -1;
 
 /******************************************************************************/
 /*Private Methods Definition -------------------------------------------------*/
 /******************************************************************************/
 static uint16_t com_get_data(void *data, uint16_t num_bytes)
 {
-#if 0
-    if (udi_cdc_is_rx_ready())
-    {
-        const iram_size_t requested = num_bytes;
-        const iram_size_t available = udi_cdc_read_no_polling(data, requested);
-        const iram_size_t returned  = (available < requested) ? available : requested;
-        return (uint16_t)returned;
-    }
-    else
-#endif
-    {
+    ssize_t retval = read(fd, data, num_bytes);
+//    printf("Rx: %d\n", retval);
+    if(retval < 0) {
+        printf("error reading from port: %s\n", strerror(errno));
         return 0;
     }
+    return retval;
+}
+
+int
+set_interface_attribs (int fd, int speed, int parity)
+{
+        struct termios tty;
+        if (tcgetattr (fd, &tty) != 0)
+        {
+                printf ("error %d from tcgetattr", errno);
+                return -1;
+        }
+
+        cfsetospeed (&tty, speed);
+        cfsetispeed (&tty, speed);
+
+        tty.c_cflag = (tty.c_cflag & ~CSIZE) | CS8;     // 8-bit chars
+        // disable IGNBRK for mismatched speed tests; otherwise receive break
+        // as \000 chars
+        tty.c_iflag &= ~IGNBRK;         // disable break processing
+        tty.c_lflag = 0;                // no signaling chars, no echo,
+                                        // no canonical processing
+        tty.c_oflag = 0;                // no remapping, no delays
+        tty.c_cc[VMIN]  = 0;            // read doesn't block
+        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+
+        tty.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+
+        tty.c_cflag |= (CLOCAL | CREAD);// ignore modem controls,
+                                        // enable reading
+        tty.c_cflag &= ~(PARENB | PARODD);      // shut off parity
+        tty.c_cflag |= parity;
+        tty.c_cflag &= ~CSTOPB;
+        tty.c_cflag &= ~CRTSCTS;
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+        {
+                printf ("error %d from tcsetattr", errno);
+                return -1;
+        }
+        return 0;
+}
+
+void
+set_blocking (int fd, int should_block)
+{
+        struct termios tty;
+        memset (&tty, 0, sizeof tty);
+        if (tcgetattr (fd, &tty) != 0)
+        {
+                printf ("error %d from tggetattr", errno);
+                return;
+        }
+
+        tty.c_cc[VMIN]  = should_block ? 1 : 0;
+//        tty.c_cc[VTIME] = 5;            // 0.5 seconds read timeout
+        tty.c_cc[VTIME] = 0;            // no read timeout
+
+        if (tcsetattr (fd, TCSANOW, &tty) != 0)
+                printf ("error %d setting term attributes", errno);
 }
 
 /******************************************************************************/
@@ -81,66 +143,59 @@ void SerialPort_Constructor(void)
 
 sr_t SerialPort_open(uint32_t baudrate)
 {
+    fd = open (portname, O_RDWR | O_NOCTTY | O_SYNC);
+    if (fd < 0)
+    {
+        printf ("error %d opening %s: %s", errno, portname, strerror (errno));
+        return E_FAILED;
+    }
+
+    if(baudrate != 921600)
+    {
+        printf ("error must use 921600 baud\n");
+        return E_FAILED;
+    }
+
+    set_interface_attribs (fd, B921600, 0);  // set speed to 921,600 bps, 8n1 (no parity)
+    set_blocking (fd, 0);                // set no blocking
+
     return E_SUCCESS;
 }
 
 bool SerialPort_isOpened(void)
 {
-    return true;
+    return fd >= 0;
 }
 
 sr_t SerialPort_close(void)
 {
+    close(fd);
     return E_SUCCESS;
 }
 
 
 void SerialPort_clearInputBuffer(void)
 {
-#if 0
-    uint8_t rxBuffer[USB_ENDPOINT_PACKET_SIZE];
+    uint8_t rxBuffer[32];
     while (com_get_data(rxBuffer, sizeof(rxBuffer)))
         ;
-#endif
 }
 
 void SerialPort_flushOutputBuffer(void)
 {
-#if 0
-    udi_cdc_flush();
-#endif
+    fsync(fd);
 }
 
 sr_t SerialPort_send(const uint8_t data[], uint16_t length)
 {
-#if 0
-    chrono_ticks_t deadline = chrono_get_timepoint(chrono_milliseconds(2000));
-
-    while (length)
-    {
-        const iram_size_t freeBuf = udi_cdc_get_free_tx_buffer();
-        if (freeBuf)
-        {
-            const iram_size_t bytesToSend = (length > freeBuf) ? freeBuf : length;
-            udi_cdc_write_buf(data, bytesToSend);
-            length -= bytesToSend;
-            data += bytesToSend;
-        }
-        else if (chrono_has_passed(deadline))
-        {
-            return E_TIMEOUT;
-        }
-    }
-#endif
-
-    return E_SUCCESS;
+    return write(fd, data, length) == length ? E_SUCCESS : E_FAILED;
 }
 
 sr_t SerialPort_receive(uint8_t data[], uint16_t length, uint16_t timeout, bool returnImmediately, uint16_t *count)
 {
-#if 0
     sr_t ret                      = E_SUCCESS;
     uint16_t left                 = length;
+
     const chrono_ticks_t deadline = chrono_get_timepoint(chrono_milliseconds(timeout));
     while (left > 0)
     {
@@ -162,14 +217,9 @@ sr_t SerialPort_receive(uint8_t data[], uint16_t length, uint16_t timeout, bool 
 
     *count = (length - left);
     return ret;
-#endif
 }
 
 sr_t SerialPort_sendString(const char data[])
 {
-#if 0
     return SerialPort_send((uint8_t *)data, strlen(data));
-#else
-    return 0;
-#endif
 }

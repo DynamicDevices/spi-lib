@@ -6,6 +6,7 @@
 
 #include <common/crc/crc16.h>
 #include <common/typeutils.h>
+#include <stdio.h>
 #include <stddef.h>
 
 /******************************************************************************/
@@ -33,12 +34,16 @@ static volatile bool m_requestActive;
 /******************************************************************************/
 static sr_t ProtocolHandlerSerial_sendPayload(const uint8_t *payload, uint16_t length)
 {
+    printf("%s\n", __FUNCTION__);
+
     m_crc = crc16_ccitt_false(payload, length, m_crc);
     return SerialPort_send(payload, length);
 }
 
 static sr_t ProtocolHandlerSerial_sendCrc(void)
 {
+    printf("%s\n", __FUNCTION__);
+
     m_buffer[0] = m_crc >> 8;
     m_buffer[1] = m_crc;
     RETURN_ON_ERROR(SerialPort_send(m_buffer, PROTOCOL_HANDLER_SERIAL_CRC_SIZE));
@@ -49,6 +54,8 @@ static sr_t ProtocolHandlerSerial_sendCrc(void)
 
 static void ProtocolHandlerSerial_response(uint8_t bmReqType, uint8_t bStatus, uint16_t wLength, const uint8_t *payload)
 {
+    printf("%s\n", __FUNCTION__);
+
     //send response-header
     VendorProtocol_ResponseHeader respHeader;
     respHeader.bmReqType = bmReqType;
@@ -68,6 +75,8 @@ static void ProtocolHandlerSerial_response(uint8_t bmReqType, uint8_t bStatus, u
 
 static uint8_t ProtocolHandlerSerial_parseInputData(VendorProtocol_RequestHeader *request, uint8_t **requestPayload)
 {
+    printf("%s\n", __FUNCTION__);
+
     //Check header
     VendorProtocol_unserializeRequestHeader(request, m_buffer);
     uint16_t headerSize;
@@ -129,6 +138,8 @@ static void ProtocolHandlerSerial_write(void)
     VendorProtocol_RequestHeader request;
     uint8_t *requestPayload = NULL;
 
+    printf("%s\n", __FUNCTION__);
+
     const uint8_t parseResult = ProtocolHandlerSerial_parseInputData(&request, &requestPayload);
     if (parseResult != STATUS_SUCCESS)
     {
@@ -150,6 +161,9 @@ static void ProtocolHandlerSerial_read(void)
 {
     //Check header
     VendorProtocol_RequestHeader request;
+
+    printf("%s\n", __FUNCTION__);
+
     const uint8_t parseResult = ProtocolHandlerSerial_parseInputData(&request, NULL);
     if (parseResult != STATUS_SUCCESS)
     {
@@ -205,6 +219,8 @@ static void ProtocolHandlerSerial_transfer(void)
 
 static void ProtocolHandlerSerial_reset(void)
 {
+    printf("%s\n", __FUNCTION__);
+
     SerialPort_flushOutputBuffer();
 }
 
@@ -214,6 +230,8 @@ static
     sr_t
     ProtocolHandlerSerial_sendDataPacket(VendorProtocol_DataPacketHeader *header, const uint8_t *payload, uint64_t timestamp)
 {
+    printf("%s\n", __FUNCTION__);
+
     if (!m_serialPortEnabled)
     {
         return E_NOT_INITIALIZED;

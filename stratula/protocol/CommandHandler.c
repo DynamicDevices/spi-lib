@@ -2,6 +2,7 @@
 #include <common/serialization.h>
 #include <universal/protocol/protocol_definitions.h>
 
+#include <stdio.h>
 #include <stddef.h>
 
 
@@ -74,10 +75,14 @@ uint8_t CommandHandler_write(CommandHandler *self, uint16_t wValue, uint16_t wIn
 
 uint8_t CommandHandler_read(CommandHandler *self, uint16_t wValue, uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
+    printf("wType: %d, Id: %d, Subinterface: %d, Function: %d\n", CMD_GET_TYPE(wValue), CMD_GET_ID(wIndex), CMD_GET_SUBIF(wIndex), CMD_GET_FUNCTION(wIndex));
+
     const uint16_t wType = CMD_GET_TYPE(wValue);
     if (!wType)
     {
-        return getCount(self, CMD_GET_TYPE(wIndex), payload);
+        uint8_t count = getCount(self, CMD_GET_TYPE(wIndex), payload);
+        printf("Count: %d\n", (int)count);
+        return count;
     }
 
     ICommands *commands = findRegistration(self, wType);

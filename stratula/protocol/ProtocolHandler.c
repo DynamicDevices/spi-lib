@@ -12,8 +12,6 @@
 
 void ProtocolHandler_Constructor(void)
 {
-   printf("ProtocolHandler_Constructor\n");
-
 #ifdef COMMUNICATION_UDP
     ProtocolHandlerUdp_Constructor();
 #endif
@@ -33,8 +31,6 @@ void ProtocolHandler_Constructor(void)
 
 void ProtocolHandler_run(void)
 {
-   printf("ProtocolHandler_run\n");
-
 #ifdef COMMUNICATION_SERIAL
     ProtocolHandlerSerial_run();
 #endif

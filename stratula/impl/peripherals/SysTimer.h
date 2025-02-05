@@ -70,10 +70,14 @@ uint32_t SysTimer_getTicks_per_us(uint16_t microseconds);
 /*!
  * \brief This function return the current system tick counter.
  */
+
+#if 0
 static inline uint32_t SysTimer_getTime(void)
 {
     return SysTimer_s_uSysTickCounter;
 }
-
+#else
+uint32_t SysTimer_getTime(void);
+#endif
 
 #endif /* SYSTIMER_H_ */

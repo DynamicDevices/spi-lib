@@ -30,6 +30,10 @@
 #ifndef PLATFORM_INTERRUPT_DEFINITION_H_
 #define PLATFORM_INTERRUPT_DEFINITION_H_
 
+#warning "Commented out platform interrupt bits"
+
+#if 0
+
 #include <ioport.h>
 #include <pio.h>
 
@@ -40,6 +44,15 @@ typedef struct
     uint32_t ul_attr;
 
 } PlatformInterruptDefinition_t;
+#else
+typedef struct
+{
+//    ioport_pin_t pin;
+    uint32_t ul_attribute;
+    uint32_t ul_attr;
 
+} PlatformInterruptDefinition_t;
+
+#endif
 
 #endif /* PLATFORM_INTERRUPT_DEFINITION_H_ */

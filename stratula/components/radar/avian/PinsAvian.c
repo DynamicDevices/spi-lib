@@ -55,5 +55,9 @@ void PinsAvian_Constructor(PinsAvian *self, IGpio *accessGpio, const IPinsAvianD
 
     // the IRQ should be triggered on the rising low-high edge, so the signal should be pulled into a defined low state,
     // so that spurious IRQs aren't generated whilst the pin is floating (i.e. during startup or whilst the BGT is in reset)
+#if 0
     self->m_accessGpio->configurePin(self->m_config->gpioIrq, GPIO_MODE_INPUT_PULL_DOWN);
+#else
+    printf("TODO: Setup pins\n");
+#endif
 }

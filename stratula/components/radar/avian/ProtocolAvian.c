@@ -13,7 +13,11 @@ sr_t ProtocolAvian_execute(IProtocolAvian *self, const uint8_t commands[][4], ui
     {
         uint8_t bufRead[4];
 
+#if 0
         RETURN_ON_ERROR(SELF->m_accessSpi->transfer8(SELF->m_devId, sizeof(*commands), *commands++, bufRead, false));
+#else
+        printf("TODO: SPI transfer\n");
+#endif
 
         if (results)
         {
@@ -57,9 +61,14 @@ void ProtocolAvian_Constructor(ProtocolAvian *self, ISpi *accessSpi, uint8_t dev
         const uint8_t wordSize = 8;  ///< number of bits per transaction
 
         const uint32_t speed = 50000000;  ///< device speed
+
+#if 0
         if (self->m_accessSpi->configure(self->m_devId, flags, wordSize, speed) != E_SUCCESS)
         {
             fatal_error(FATAL_ERROR_SPI_CONFIG_FAILED);
         }
+#else
+        printf("TODO: Setup SPI bus\n");
+#endif
     }
 }

@@ -36,6 +36,9 @@
 #include "interface/app_argparse.h"
 #include "ifxBase/Error.h"
 
+#include <board/Board.h>
+#include <protocol/ProtocolHandler.h>
+
 static uint32_t frame_limit = 0;
 
 static bool set_frames(int v) {
@@ -60,6 +63,11 @@ static const app_cmdarg_t *argdesc[] = {
     NULL
 };
 
+#include <common/typeutils.h>
+#include <components/radar/Avian.h>
+#include <components/interfaces/IRadarAvian.h>
+#include <platform/DataAvian.h>
+
 int main(int argc, char* argv[])
 {   
     int exitcode = EXIT_FAILURE;
@@ -67,6 +75,30 @@ int main(int argc, char* argv[])
     rep_init();
     acq_init();
     record_init();
+
+    printf("Running bridge\n");
+
+    Avian m_avian;
+    BoardRadarDefinition_t BoardRadarDefinitionAvian = {
+        .devId = 0,
+        .dataIndex = 0,
+        .channelSwapping = 0
+    };
+    IPinsAvianDefinition_t BoardPinsAvian = {
+        .gpioReset = 0,
+        .gpioIrq = 0,
+    };
+
+//    Avian_Constructor(&m_avian, &DataAvian, gpio, spi, BoardRadarDefinitionAvian, BoardPinsAvian);
+    Avian_Constructor(&m_avian, &DataAvian, NULL, NULL, &BoardRadarDefinitionAvian, &BoardPinsAvian);
+
+//    if(!Commands_IRadarAvian_register(&m_avian.b_IRadarAviNULLan))
+//        printf("Error registering IRadarAvian\n");
+        
+//    DataAvian_Constructor(Board_acquisitionStatusCallback);
+//    DataAvian_setBuffer(BoardRadarDefinitionAvian->dataIndex, m_dataBuffer, DATA_BUFFER_SIZE);
+//    BoardIrqPinsAvian->pin = PlatformGpio_getPortPin(ShieldConnectorDefinition[shieldId].irq0);
+//    DataAvian_initialize(BoardRadarDefinitionAvian->dataIndex, BoardIrqPinsAvian, useQspi);
 
     if(! app_parse_opts(argdesc, argc, argv))
         goto cleanup;
@@ -85,6 +117,8 @@ int main(int argc, char* argv[])
     install_abort_request_signal_handler();
 
     rep_mark_processing_start();
+
+    ProtocolHandler_Constructor();
 
     while (!abort_requested())
     {
@@ -109,6 +143,8 @@ int main(int argc, char* argv[])
             rep_msg("frame limit reached, aborting.\n");
             request_abort();
         }
+
+       ProtocolHandler_run();
     }
 
     // everything successful

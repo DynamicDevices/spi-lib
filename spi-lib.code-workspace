@@ -4,5 +4,11 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"files.associations": {
+			"commands_iradaravian.h": "c",
+			"avian.h": "c",
+			"dataavian.h": "c"
+		}
+	}
 }

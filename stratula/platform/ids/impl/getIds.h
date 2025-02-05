@@ -19,8 +19,8 @@ sr_t getUuid(uint8_t uuid[UUID_LENGTH])
     return _24aa02xuid_getUuid(BOARD_EEPROM_ADDRESS_24AA02XUID, uuid);
 #elif defined(BOARD_EEPROM_ADDRESS_24CW128X)
     return _24cw128x_getUuid(BOARD_EEPROM_ADDRESS_24CW128X, uuid);
-//#elseif
-//    return getUuidFromMac(uuid);
+#elseif
+    return getUuidFromMac(uuid);
 #else
     return E_NOT_IMPLEMENTED;
 #endif

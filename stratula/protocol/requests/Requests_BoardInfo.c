@@ -34,7 +34,6 @@
  */
 static inline uint8_t Requests_getBoardInfo(uint16_t wIndex, uint16_t wLengthIn, const uint8_t *payloadIn, uint16_t *wLengthOut, uint8_t **payloadOut)
 {
-#if 0
     if (wLengthIn != 0)
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -46,7 +45,6 @@ static inline uint8_t Requests_getBoardInfo(uint16_t wIndex, uint16_t wLengthIn,
 
     *payloadOut = (uint8_t *)&boardInfo;
     *wLengthOut = sizeof(boardInfo);
-#endif
 
     return STATUS_SUCCESS;
 }
@@ -104,30 +102,25 @@ static inline uint8_t Requests_Bootloader(uint16_t wIndex, uint16_t wLength, con
  */
 static inline uint8_t Requests_getVersionInfo(uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
-#if 0
     if (wLength != sizeof(versionInfo))
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
     }
 
     *payload = (uint8_t *)&versionInfo;
-#endif
 
     return STATUS_SUCCESS;
 }
 
 static inline uint8_t Requests_getUuid(uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
-#if 0
     if (wLength != UUID_LENGTH)
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
     }
 
-    return getUuid(*payload);
-#else
-   return STATUS_SUCCESS;
-#endif
+//    return getUuid(*payload);
+    return E_NOT_IMPLEMENTED;
 }
 
 /** Read out the software version information
@@ -143,7 +136,6 @@ static inline uint8_t Requests_getUuid(uint16_t wIndex, uint16_t wLength, uint8_
  */
 static inline uint8_t Requests_getExtendedVersion(uint16_t wIndex, uint16_t wLengthIn, const uint8_t *payloadIn, uint16_t *wLengthOut, uint8_t **payloadOut)
 {
-#if 0
     if (wLengthIn != 0)
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -155,7 +147,6 @@ static inline uint8_t Requests_getExtendedVersion(uint16_t wIndex, uint16_t wLen
 
     *payloadOut = (uint8_t *)&extendedVersion;
     *wLengthOut = sizeof(extendedVersion);
-#endif
 
     return STATUS_SUCCESS;
 }
@@ -163,7 +154,6 @@ static inline uint8_t Requests_getExtendedVersion(uint16_t wIndex, uint16_t wLen
 
 uint8_t Requests_BoardInfo_read(uint16_t wValue, uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
-#if 0
     switch (wValue)
     {
         case REQ_BOARD_INFO_VERSION_INFO_WVALUE:
@@ -175,7 +165,6 @@ uint8_t Requests_BoardInfo_read(uint16_t wValue, uint16_t wIndex, uint16_t wLeng
         default:
             break;
     }
-#endif
     return STATUS_REQUEST_WVALUE_INVALID;
 }
 
@@ -196,7 +185,6 @@ uint8_t Requests_BoardInfo_write(uint16_t wValue, uint16_t wIndex, uint16_t wLen
 
 uint8_t Requests_BoardInfo_transfer(uint16_t wValue, uint16_t wIndex, uint16_t wLengthIn, const uint8_t *payloadIn, uint16_t *wLengthOut, uint8_t **payloadOut)
 {
-#if 0
     switch (wValue)
     {
         case REQ_BOARD_INFO_BOARD_INFO_WVALUE:
@@ -207,7 +195,6 @@ uint8_t Requests_BoardInfo_transfer(uint16_t wValue, uint16_t wIndex, uint16_t w
         default:
             break;
     }
-#endif
     return STATUS_REQUEST_WVALUE_INVALID;
 }
 

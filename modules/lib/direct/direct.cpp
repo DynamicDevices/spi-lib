@@ -147,7 +147,7 @@ static void read_frame_data(void)
     if(!radar.frame_buffer.try_push(frame_buffer))
     {
         rep_err("Frame buffer overflow (size: %d fill: %d)\n",
-            radar.frame_buffer.size(), radar.frame_buffer.fill());
+            (int)radar.frame_buffer.size(), (int)radar.frame_buffer.fill());
         radar.buffer_overflow = true;
     }
 }

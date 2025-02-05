@@ -13,8 +13,6 @@
 #include <common/type_serialization.h>
 #include <universal/protocol/protocol_definitions.h>
 
-#warning Implement Requets IData
-
 /******************************************************************************/
 /*Macro Definitions ----------------------------------------------------------*/
 /******************************************************************************/
@@ -36,7 +34,6 @@
 /******************************************************************************/
 static inline uint8_t Requests_IData_start(IData *data, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
-#if 0
     if (wLength != 0)
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -45,14 +42,10 @@ static inline uint8_t Requests_IData_start(IData *data, uint16_t wIndex, uint16_
     const uint8_t id = (uint8_t)wIndex;
 
     return data->start(id);
-#else
-    return 0;
-#endif
 }
 
 static inline uint8_t Requests_IData_stop(IData *data, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
-#if 0
     if (wLength != 0)
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -61,14 +54,10 @@ static inline uint8_t Requests_IData_stop(IData *data, uint16_t wIndex, uint16_t
     const uint8_t id = (uint8_t)wIndex;
 
     return data->stop(id);
-#else
-    return 0;
-#endif
 }
 
 static inline uint8_t Requests_IData_getStatusFlags(IData *data, uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
-#if 0
     if (wLength != sizeof(uint32_t))
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -77,14 +66,10 @@ static inline uint8_t Requests_IData_getStatusFlags(IData *data, uint16_t wIndex
     const uint8_t id = (uint8_t)wIndex;
 
     return data->getStatusFlags(id, (uint32_t *)(uintptr_t)(*payload));
-#else
-    return 0;
-#endif
 }
 
 static inline uint8_t Requests_IData_configure(IData *data, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
-#if 0
     if (wLength < sizeof_serialized_IDataProperties())
     {
         return STATUS_REQUEST_WLENGTH_INVALID;
@@ -100,9 +85,6 @@ static inline uint8_t Requests_IData_configure(IData *data, uint16_t wIndex, uin
     const uint16_t length   = wLength - sizeof_serialized_IDataProperties();
 
     return data->configure(id, &dataProperties, settings, length);
-#else
-    return 0;
-#endif
 }
 
 /******************************************************************************/
@@ -111,7 +93,6 @@ static inline uint8_t Requests_IData_configure(IData *data, uint16_t wIndex, uin
 
 uint8_t Requests_IData_write(IData *data, uint16_t wValue, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
-#if 0
     switch (wValue)
     {
         case REQ_DATA_CONFIGURE:
@@ -127,12 +108,10 @@ uint8_t Requests_IData_write(IData *data, uint16_t wValue, uint16_t wIndex, uint
             return STATUS_REQUEST_WVALUE_INVALID;
             break;
     }
-#endif
 }
 
 uint8_t Requests_IData_read(IData *data, uint16_t wValue, uint16_t wIndex, uint16_t wLength, uint8_t **payload)
 {
-#if 0
     switch (wValue)
     {
         case REQ_DATA_STATUS_FLAGS:
@@ -142,7 +121,6 @@ uint8_t Requests_IData_read(IData *data, uint16_t wValue, uint16_t wIndex, uint1
             return STATUS_REQUEST_WVALUE_INVALID;
             break;
     }
-#endif
 }
 
 

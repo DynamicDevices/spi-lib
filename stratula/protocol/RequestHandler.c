@@ -19,6 +19,7 @@
 #include "requests/Requests_ISpi.h"
 #include "requests/Requests_Macro.h"
 
+#include <stdio.h>
 #include <stddef.h>
 
 /******************************************************************************/
@@ -57,6 +58,8 @@ static II2c *m_i2c;
 
 void RequestHandler_register(IGpio *gpio, ISpi *spi, IData *data, II2c *i2c)
 {
+    printf("%s\n", __FUNCTION__);
+
     m_gpio = gpio;
     m_spi  = spi;
     m_data = data;
@@ -65,28 +68,38 @@ void RequestHandler_register(IGpio *gpio, ISpi *spi, IData *data, II2c *i2c)
 
 bool RequestHandler_registerComponentImplementation(ICommands *commands)
 {
+    printf("%s\n", __FUNCTION__);
+
     return CommandHandler_registerImplementation(&m_commandHandlerComponents, commands);
 }
 
 bool RequestHandler_registerModuleImplementation(ICommands *commands)
 {
+    printf("%s\n", __FUNCTION__);
+
     return CommandHandler_registerImplementation(&m_commandHandlerModules, commands);
 }
 
 bool RequestHandler_registerMacro(IRequests *requests)
 {
+    printf("%s\n", __FUNCTION__);
+
     m_requestsMacro = requests;
     return requests != NULL;
 }
 
 bool RequestHandler_registerCustom(IRequests *requests)
 {
+    printf("%s\n", __FUNCTION__);
+
     m_requestsCustom = requests;
     return requests != NULL;
 }
 
 uint8_t RequestHandler_write(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, uint16_t wLength, const uint8_t *payload)
 {
+    printf("%s\n", __FUNCTION__);
+
     switch (bRequest)
     {
         case REQ_BOARD_INFO:
@@ -164,12 +177,15 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
     switch (bRequest)
     {
         case REQ_BOARD_INFO:
+            printf("%s: REQ_BOARD_INFO\n", __FUNCTION__);
             return Requests_BoardInfo_read(wValue, wIndex, wLength, payload);
             break;
         case REQ_MEMORY:
+            printf("%s: REQ_MEMORY\n", __FUNCTION__);
             return Requests_IMemory_read(wValue, wIndex, wLength, payload);
             break;
         case REQ_GPIO:
+            printf("%s: REQ_GPIO\n", __FUNCTION__);
             if (m_gpio == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -177,6 +193,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return Requests_IGpio_read(m_gpio, wValue, wIndex, wLength, payload);
             break;
         case REQ_I2C:
+            printf("%s: REQ_I2C\n", __FUNCTION__);
             if (m_i2c == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -184,6 +201,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return Requests_II2c_read(m_i2c, wValue, wIndex, wLength, payload);
             break;
         case REQ_I2C_TRANSACTION_16:
+            printf("%s: REQ_I2C_TRANSACTION_16\n", __FUNCTION__);
             if (m_i2c == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -191,6 +209,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return Requests_II2c_transaction16_read(m_i2c, wValue, wIndex, wLength, payload);
             break;
         case REQ_SPI:
+            printf("%s: REQ_SPI\n", __FUNCTION__);
             if (m_spi == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -198,6 +217,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return Requests_ISpi_read(m_spi, wValue, wIndex, wLength, payload);
             break;
         case REQ_DATA:
+            printf("%s: REQ_DATA\n", __FUNCTION__);
             if (m_data == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -205,6 +225,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return Requests_IData_read(m_data, wValue, wIndex, wLength, payload);
             break;
         case REQ_MACRO:
+            printf("%s: REQ_MACRO\n", __FUNCTION__);
             if (m_requestsMacro == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -212,12 +233,15 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return m_requestsMacro->read(wValue, wIndex, wLength, payload);
             break;
         case CMD_COMPONENT:
+            printf("%s: CMD_COMPONENT\n", __FUNCTION__);
             return CommandHandler_read(&m_commandHandlerComponents, wValue, wIndex, wLength, payload);
             break;
         case CMD_MODULE:
+            printf("%s: CMD_MODULE\n", __FUNCTION__);
             return CommandHandler_read(&m_commandHandlerModules, wValue, wIndex, wLength, payload);
             break;
         case REQ_CUSTOM:
+            printf("%s: REQ_CUSTOM\n", __FUNCTION__);
             if (m_requestsCustom == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -225,6 +249,7 @@ uint8_t RequestHandler_read(uint8_t bRequest, uint16_t wValue, uint16_t wIndex, 
             return m_requestsCustom->read(wValue, wIndex, wLength, payload);
             break;
         default:
+            printf("%s: UNKOWN\n", __FUNCTION__);
             break;
     }
     return STATUS_REQUEST_INVALID;
@@ -235,12 +260,15 @@ uint8_t RequestHandler_transfer(uint8_t bRequest, uint16_t wValue, uint16_t wInd
     switch (bRequest)
     {
         case REQ_BOARD_INFO:
+            printf("%s: REQ_BOARD_INFO\n", __FUNCTION__);
             return Requests_BoardInfo_transfer(wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         case REQ_SPI:
+            printf("%s: REQ_SPI\n", __FUNCTION__);
             return Requests_ISpi_transfer(m_spi, wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         case REQ_MACRO:
+            printf("%s: REQ_MACRO\n", __FUNCTION__);
             if (m_requestsMacro == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -248,12 +276,15 @@ uint8_t RequestHandler_transfer(uint8_t bRequest, uint16_t wValue, uint16_t wInd
             return m_requestsMacro->transfer(wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         case CMD_COMPONENT:
+            printf("%s: CMD_COMPONENT\n", __FUNCTION__);
             return CommandHandler_transfer(&m_commandHandlerComponents, wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         case CMD_MODULE:
+            printf("%s: CMD_MODULE\n", __FUNCTION__);
             return CommandHandler_transfer(&m_commandHandlerModules, wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         case REQ_CUSTOM:
+            printf("%s: REQ_CUSTOM\n", __FUNCTION__);
             if (m_requestsCustom == NULL)
             {
                 return STATUS_REQUEST_NOT_AVAILABLE;
@@ -261,6 +292,7 @@ uint8_t RequestHandler_transfer(uint8_t bRequest, uint16_t wValue, uint16_t wInd
             return m_requestsCustom->transfer(wValue, wIndex, wLengthIn, payloadIn, wLengthOut, payloadOut);
             break;
         default:
+            printf("%s: Unknown\n", __FUNCTION__);
             break;
     }
     return STATUS_REQUEST_INVALID;
