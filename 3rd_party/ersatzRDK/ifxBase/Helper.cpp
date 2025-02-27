@@ -30,6 +30,9 @@
 #include <algorithm>
 #include <iterator>
 
+// THESE ARE ALREADY INLINED IN .HPP !
+
+#if 0
 
 std::vector<std::string> ifx::string::split(const std::string& text, const std::string& delim)
 {
@@ -87,3 +90,5 @@ std::string ifx::string::upper(const std::string& text)
     transform(text.begin(), text.end(), back_inserter(upper), [](char c) { return toupper(c); });
     return upper;
 }
+
+#endif
