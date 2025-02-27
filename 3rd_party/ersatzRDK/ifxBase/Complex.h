@@ -38,19 +38,21 @@
 #ifndef IFX_BASE_COMPLEX_H
 #define IFX_BASE_COMPLEX_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include "ifxBase/Defines.h"
-#include "ifxBase/Types.h"
+#include "Defines.h"
+#include "Types.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -66,21 +68,32 @@ extern "C"
 
 #define IFX_COMPLEX_REAL(c) ((c).data[0])
 #define IFX_COMPLEX_IMAG(c) ((c).data[1])
-#define IFX_COMPLEX_SET_REAL(c, r) do{ (c).data[0] = r; } while(0)
-#define IFX_COMPLEX_SET_IMAG(c, i) do{ (c).data[1] = i; } while(0)
-#define IFX_COMPLEX_DEF(r, i) { {(ifx_Float_t)(r), (ifx_Float_t)(i)} }
-#define IFX_COMPLEX_SET(c, r, i) \
-    do { IFX_COMPLEX_SET_REAL(c, r); IFX_COMPLEX_SET_IMAG(c, i); } while(0)
+#define IFX_COMPLEX_SET_REAL(c, r) \
+    do                             \
+    {                              \
+        (c).data[0] = r;           \
+    } while (0)
+#define IFX_COMPLEX_SET_IMAG(c, i) \
+    do                             \
+    {                              \
+        (c).data[1] = i;           \
+    } while (0)
+#define IFX_COMPLEX_DEF(r, i)                  \
+    {                                          \
+        {                                      \
+            (ifx_Float_t)(r), (ifx_Float_t)(i) \
+        }                                      \
+    }
+#define IFX_COMPLEX_SET(c, r, i)    \
+    do                              \
+    {                               \
+        IFX_COMPLEX_SET_REAL(c, r); \
+        IFX_COMPLEX_SET_IMAG(c, i); \
+    } while (0)
 
-IFX_DLL_PUBLIC
-extern const ifx_Complex_t ifx_complex_zero;
-
-IFX_DLL_PUBLIC
-extern const ifx_Complex_t ifx_complex_one;
-
-#define IFX_COMPLEX_IS_EQUAL(a, b) \
-    (IFX_COMPLEX_REAL(a) == IFX_COMPLEX_REAL(b)) && \
-    (IFX_COMPLEX_IMAG(a) == IFX_COMPLEX_IMAG(b))
+#define IFX_COMPLEX_IS_EQUAL(a, b)                \
+    ((IFX_COMPLEX_REAL(a) == IFX_COMPLEX_REAL(b)) \
+     && (IFX_COMPLEX_IMAG(a) == IFX_COMPLEX_IMAG(b)))
 
 /*
 ==============================================================================
@@ -89,21 +102,21 @@ extern const ifx_Complex_t ifx_complex_one;
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_complex Complex
-  * @brief API for operations on complex numbers
-  *
-  * @{
-  */
+ * @brief API for operations on complex numbers
+ *
+ * @{
+ */
 
 /**
  * @brief Computes the absolute value of a complex number |z|.
  *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
  *
- * @return Computed absolute value: square root of sum of squares (hypotenuse) defined by \ref ifx_Float_t.
+ * @return Computed absolute value: square root of sum of squares (hypotenuse) defined by \see ifx_Float_t.
  *
  */
 IFX_DLL_PUBLIC
@@ -176,7 +189,7 @@ ifx_Complex_t ifx_complex_div(ifx_Complex_t a,
  * @brief Adds a real value to a complex number.
  *
  * @param [in]     a         Complex number defined by \ref ifx_Complex_t.
- * @param [in]     b         Real floating value defined by \ref ifx_Float_t.
+ * @param [in]     b         Real floating value defined by \see ifx_Float_t.
  *
  * @return Addition result of the passed complex number and real value defined by \ref ifx_Complex_t.
  *
@@ -189,7 +202,7 @@ ifx_Complex_t ifx_complex_add_real(ifx_Complex_t a,
  * @brief Subtracts a real value from a complex number.
  *
  * @param [in]     a         Complex number defined by \ref ifx_Complex_t.
- * @param [in]     b         Real floating value defined by \ref ifx_Float_t.
+ * @param [in]     b         Real floating value defined by \see ifx_Float_t.
  *
  * @return Subtraction result of the passed complex number and real value defined by \ref ifx_Complex_t.
  *
@@ -202,7 +215,7 @@ ifx_Complex_t ifx_complex_sub_real(ifx_Complex_t a,
  * @brief Applies multiplication by real value to a complex number.
  *
  * @param [in]     a         Complex number defined by \ref ifx_Complex_t.
- * @param [in]     b         Real floating value defined by \ref ifx_Float_t.
+ * @param [in]     b         Real floating value defined by \see ifx_Float_t.
  *
  * @return Multiplication result of the passed complex number by a real value defined by \ref ifx_Complex_t.
  *
@@ -215,7 +228,7 @@ ifx_Complex_t ifx_complex_mul_real(ifx_Complex_t a,
  * @brief Applies division by real value to a complex number.
  *
  * @param [in]     a         Complex number defined by \ref ifx_Complex_t.
- * @param [in]     b         Real floating point values defined by \ref ifx_Float_t.
+ * @param [in]     b         Real floating point values defined by \see ifx_Float_t.
  *
  * @return Division result of the passed complex number by a real value defined by \ref ifx_Complex_t.
  *
@@ -225,7 +238,10 @@ ifx_Complex_t ifx_complex_div_real(ifx_Complex_t a,
                                    ifx_Float_t b);
 
 /**
- * @brief Computes the complex logarithm of a complex number ln(z).
+ * @brief Computes the complex logarithm of a complex number \f$\log{z}\f$.
+ *
+ * The function returns the principal value of the complex natural logarithm
+ * such that \f$\mathrm{Im}\left(\log z\right) \in (-\pi, \pi)\f$.
  *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
  *
@@ -249,10 +265,13 @@ ifx_Complex_t ifx_complex_log10(ifx_Complex_t z);
 /**
  * @brief Computes the complex argument of a complex number.
  *
+ * For a complex number \f$z=r e^{i\varphi}\f$ the function returns
+ * the argument \f$\varphi\f$. The argument \f$\varphi\f$ is between \f$-\pi\f$
+ * and \f$\pi\f$.
+ *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
  *
- * @return Computed complex argument of the passed complex number defined by \ref ifx_Float_t.
- *
+ * @return Computed complex argument
  */
 IFX_DLL_PUBLIC
 ifx_Float_t ifx_complex_arg(ifx_Complex_t z);
@@ -295,7 +314,7 @@ ifx_Complex_t ifx_complex_square(ifx_Complex_t z);
  *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
  *
- * @return Computed squared norm value of the passed complex number defined by \ref ifx_Float_t.
+ * @return Computed squared norm value of the passed complex number defined by \see ifx_Float_t.
  *
  */
 IFX_DLL_PUBLIC
@@ -306,17 +325,17 @@ ifx_Float_t ifx_complex_sqnorm(ifx_Complex_t z);
  *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
  *
- * @return Computed square root value of the passed complex number defined by \ref ifx_Float_t.
+ * @return Computed square root value of the passed complex number defined by \see ifx_Float_t.
  *
  */
 IFX_DLL_PUBLIC
 ifx_Complex_t ifx_complex_sqrt(ifx_Complex_t z);
- 
+
 /**
  * @brief Computes the nth power of a complex number z.
  *
  * @param [in]     z         Complex number defined by \ref ifx_Complex_t.
- * @param [in]     n         Unsigned integer 
+ * @param [in]     n         Unsigned integer
  *
  * @return Computed the nth power of the passed complex number.
  *
@@ -325,15 +344,15 @@ IFX_DLL_PUBLIC
 ifx_Complex_t ifx_complex_pow(ifx_Complex_t z, uint16_t n);
 
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_COMPLEX_H */

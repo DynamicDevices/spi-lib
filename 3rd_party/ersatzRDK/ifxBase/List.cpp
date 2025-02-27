@@ -33,8 +33,9 @@
 ==============================================================================
 */
 
-#include "ifxBase/List.h"
-#include "ifxBase/Error.h"
+#include "List.h"
+#include "Error.h"
+#include "internal/NonCopyable.hpp"
 
 #include <vector>
 
@@ -48,27 +49,37 @@ struct ifxList
 {
 private:
     void (*m_destructor)(void*) = nullptr;
-    std::vector<void *> m_vector;
-    
+    std::vector<void*> m_vector;
+
 public:
-    ifxList(void (*destructor)(void*)) : m_destructor(destructor) {}
-    
+    NONCOPYABLE(ifxList);
+    ifxList() = delete;
+    ifxList(void (*destructor)(void*)) :
+        m_destructor(destructor)
+    {}
+
     ~ifxList()
     {
-        if(m_destructor)
+        if (m_destructor)
         {
-            for(void* p : m_vector)
+            for (void* p : m_vector)
                 m_destructor(p);
         }
     }
-    
-    size_t size() const { return m_vector.size(); }
-    
-    void push_back(void* v) { return m_vector.push_back(v); }
-    
+
+    size_t size() const
+    {
+        return m_vector.size();
+    }
+
+    void push_back(void* v)
+    {
+        return m_vector.push_back(v);
+    }
+
     void* get(size_t index) const
     {
-        if(index < m_vector.size())
+        if (index < m_vector.size())
             return m_vector[index];
         else
         {
@@ -86,7 +97,7 @@ public:
 
 ifx_List_t* ifx_list_create(void destructor(void*))
 {
-    ifx_List_t* list = new(std::nothrow) ifxList(destructor);
+    auto* list = new (std::nothrow) ifxList(destructor);
     IFX_ERR_BRV_NULL(list, nullptr);
     return list;
 }

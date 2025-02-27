@@ -120,6 +120,51 @@ static const uint32_t regs_landscape_1GHz[] =
     0xFFFFFFFF
 };
 
+static const uint32_t regs_utr11[] =
+/* BGT60 register settings for segmentation 1GHz bandwidth */
+{ 
+    0x11c0e20, 
+    0x3140210, 
+    0x9e967fd, 
+    0xb4805b4, 
+    0xd1083ff, 
+    0x11000000, 
+    0x13000000, 
+    0x15000000, 
+    0x17d0d9e0, 
+    0x19000000, 
+    0x1b000000, 
+    0x1d000000, 
+    0x1f000960, 
+    0x21003c71, 
+    0x2314001f, 
+    0x2500000a, 
+    0x2d000490, 
+    0x3b000480, 
+    0x49000480, 
+    0x57000480, 
+    0x5911be0e, 
+    0x5b651c0a, 
+    0x5d03f000, 
+    0x5fbf3e1e, 
+    0x61c1ed32, 
+    0x630001d5, 
+    0x65030532, 
+    0x67000080, 
+    0x69000000, 
+    0x6b000000, 
+    0x6d000000, 
+    0x6f261b10, 
+    0x7f000100, 
+    0x8f000100, 
+    0x9f000100, 
+    0xa10a0000, 
+    0xad000000, 
+    0xb7000000, 
+    0xbf000400, 
+    0xc1000827
+};
+
 direct_mode_description_t
 direct_device_default_mode_table[] =
 {
@@ -139,6 +184,18 @@ direct_device_default_mode_table[] =
         "landscape-1ghz", "landscape using 1GHz of bandwidth",
         .num_antennas = 2,
         .regs = regs_landscape_1GHz,
+        {
+            .num_samples_per_chirp = 128,
+            .num_chirps_per_frame = 64,
+            .bandwidth_Hz = (ifx_Float_t)1000000000u,
+            .center_frequency_Hz = (ifx_Float_t)61000000000u,
+            .orientation = IFX_ORIENTATION_LANDSCAPE,
+        }
+    },
+    {
+        "utr11", "landscape using 1GHz of bandwidth",
+        .num_antennas = 1,
+        .regs = regs_utr11,
         {
             .num_samples_per_chirp = 128,
             .num_chirps_per_frame = 64,

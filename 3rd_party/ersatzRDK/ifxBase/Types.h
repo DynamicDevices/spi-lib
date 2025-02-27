@@ -33,13 +33,9 @@
  * @brief Definitions of data types used within the SDK.
  */
 
-#ifndef IFX_RADAR_TYPES_H
-#define IFX_RADAR_TYPES_H
+#ifndef IFX_BASE_TYPES_H
+#define IFX_BASE_TYPES_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
 
 /*
 ==============================================================================
@@ -47,8 +43,17 @@ extern "C"
 ==============================================================================
 */
 
-#include <stddef.h> // for size_t
+#ifdef __cplusplus
+#include <cstddef>  // for size_t
+#include <cstdint>
+
+extern "C"
+{
+#else
+#include <stdbool.h>
+#include <stddef.h>  // for size_t
 #include <stdint.h>
+#endif
 
 /*
 ==============================================================================
@@ -77,33 +82,55 @@ extern "C"
  *      - Linux: No preprocessor defines are needed
  */
 #ifdef RADAR_SDK_BUILD_STATIC
-    // build as static library; no visibility
-    #define IFX_DLL_PUBLIC
-    #define IFX_DLL_HIDDEN
+// build as static library; no visibility
+#define IFX_DLL_PUBLIC
+#define IFX_DLL_HIDDEN
 #elif defined(_MSC_VER) || defined(__MINGW64__) || defined(__WIN32__)
-    // default visibility is hidden, so IFX_DLL_HIDDEN is a noop
-    #define IFX_DLL_HIDDEN
+// default visibility is hidden, so IFX_DLL_HIDDEN is a noop
+#define IFX_DLL_HIDDEN
 
-    #ifndef IFX_DLL_PUBLIC
-        #ifdef radar_sdk_EXPORTS
-            // We are building this library
-            #define IFX_DLL_PUBLIC __declspec(dllexport)
-        #else
-            // We are using this library
-            #define IFX_DLL_PUBLIC __declspec(dllimport)
-        #endif
-    #endif
-#elif (__GNUC__ >= 4) || (__clang_major__ >= 5)
-    // see https://gcc.gnu.org/wiki/Visibility
-    #define IFX_DLL_PUBLIC __attribute__ ((visibility ("default")))
-    #define IFX_DLL_HIDDEN __attribute__ ((visibility ("hidden")))
+#ifndef IFX_DLL_PUBLIC
+#ifdef radar_sdk_EXPORTS
+// We are building this library
+#define IFX_DLL_PUBLIC __declspec(dllexport)
 #else
-    #define IFX_DLL_PUBLIC
-    #define IFX_DLL_HIDDEN
+// We are using this library
+#define IFX_DLL_PUBLIC __declspec(dllimport)
 #endif
+#endif
+#elif (__GNUC__ >= 4) || (__clang_major__ >= 5)
+// see https://gcc.gnu.org/wiki/Visibility
+#define IFX_DLL_PUBLIC __attribute__((visibility("default")))
+#define IFX_DLL_HIDDEN __attribute__((visibility("hidden")))
+#else
+#define IFX_DLL_PUBLIC
+#define IFX_DLL_HIDDEN
+#endif
+
+#define IFX_DLL_TEST IFX_DLL_PUBLIC
 
 /** Speed of light in m/s */
 #define IFX_LIGHT_SPEED_MPS ((ifx_Float_t)(299792458U))
+
+// Macro to mark typedefs as deprecated.
+// Example: IFX_TYPEDEF_DEPRECATED("my_int will be removed in RDK X.Y", int, my_int);
+#ifdef _MSC_VER
+#define IFX_TYPEDEF_DEPRECATED(msg, a, b) typedef __declspec(deprecated(msg)) a b
+#elif defined(__GNUC__) || defined(__clang__)
+#define IFX_TYPEDEF_DEPRECATED(msg, a, b) typedef a b __attribute__((deprecated))
+#else
+#define IFX_TYPEDEF_DEPRECATED(msg, a, b) typedef a b
+#endif
+
+// Macro to mark functions as deprecated.
+// Example: IFX_FUNCTION_DEPRECATED("function will be removed in RDK X.Y", IFX_DLL_PUBLIC void my_outdated_function(int x, float y));
+#if defined(__GNUC__) || defined(__clang__)
+#define IFX_FUNCTION_DEPRECATED(msg, X) X __attribute__((deprecated))
+#elif defined(_MSC_VER)
+#define IFX_FUNCTION_DEPRECATED(msg, X) __declspec(deprecated(msg)) X
+#else
+#define IFX_FUNCTION_DEPRECATED(msg, X) X
+#endif
 
 /*
 ==============================================================================
@@ -114,37 +141,42 @@ extern "C"
 typedef float ifx_Float_t;
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_types Types
-  * @brief Definitions of data types used within the SDK.
-  * @{
-  */
-  
+ * @brief Definitions of data types used within the SDK.
+ * @{
+ */
+
 /**
  * @brief Defines the structure for Complex data core parameters.
  *        Use type ifx_Complex_t for this struct.
  */
-typedef struct
+struct ifx_Complex_s
 {
     ifx_Float_t data[2];
-} ifx_Complex_t;
+};
 
 /**
- * @brief Defines the structure for Polar form. 
+ * @brief Defines the structure for Polar form.
  *        Use type ifx_Polar_t for this struct.
  */
 struct ifx_Polar_s
 {
-    ifx_Float_t radius;     /**< Radius.*/
-    ifx_Float_t angle;      /**< Angle.*/
+    ifx_Float_t radius; /**< Radius.*/
+    ifx_Float_t angle;  /**< Angle.*/
 };
 
 /**
  * @brief Polar type.
  */
 typedef struct ifx_Polar_s ifx_Polar_t;
+
+/**
+ * @brief Complex number.
+ */
+typedef struct ifx_Complex_s ifx_Complex_t;
 
 /*
 ==============================================================================
@@ -153,15 +185,15 @@ typedef struct ifx_Polar_s ifx_Polar_t;
 */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 /**
-  * @}
-  */
+ * @}
+ */
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
-#endif /* IFX_RADAR_TYPES_H */
+#endif /* IFX_BASE_TYPES_H */

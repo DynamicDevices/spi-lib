@@ -38,7 +38,7 @@ static bool acq_enable_data_integrity_test(bool enable);
 static const app_option_t acq_options[] = {
     APP_OPTION_STRING(
         "mode",
-        "select which mode to use (landscape, landscape-1ghz)",
+        "select which mode to use (landscape, landscape-1ghz, utr11)",
         acq_set_mode),
     APP_OPTION_BOOL(
         "data_integrity_test",

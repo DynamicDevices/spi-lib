@@ -1,0 +1,156 @@
+# Prerequisites
+*.d
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Vim temp files
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+[._]s[a-v][a-z]
+[._]sw[a-p]
+Session.vim
+.netrwhist
+*~
+tags
+
+# Emacs temp files
+\#*\#
+.emacs.desktop
+.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+.dir-locals.el
+
+# Visual Studio
+*.user
+.vs/
+.vscode/
+*.sdf
+*.opensdf
+*.suo
+*.TMP
+*.code-workspace
+
+# Mac metadata
+.DS_Store
+
+# git merge artifacts
+*.orig
+
+# Python bytecode
+__pycache__
+
+# Build output
+/output/
+/repo-staging/
+/deploy/
+/version.xml
+
+# Downloaded assets
+/input/
+
+# Generated documentation
+/docs/
+README.doxygen.md
+
+# Temporary files
+.*.sw*
+*~
+.DS_Store
+.metadata
+__pycache__
+design.modus.lock
+
+# Eclipse Project
+.cproject
+.project
+.settings
+.mtbLaunchConfigs
+
+# Keil Project
+*.cpdsc
+*.cprj
+*.gpdsc
+*.uvgui.*
+*.uvguix.*
+*.uvmpw
+*.uvoptx
+*.uvprojx
+RTE/
+
+# IAR Project
+*.custom_argvars
+*.dep
+*.eww
+*.ewd
+*.ewp
+*.ewt
+*.ipcf
+settings/
+*_Listings/
+*_Objects/
+
+# Coverity run analysis
+/devops_scripts
+/_coverity_
+/ARM_GNU
+/Coverity
+coverity_defects_all.txt
+coverity_defects*.csv
+/deploy
+
+# Chaitea
+test/chaitea/suites/libs*
+test/chaitea/suites/*/*/build*
+test/chaitea/suites/*/*/keys*
+test/chaitea/suites/*/*/libs*
+test/chaitea/suites/*/*/logs*
+test/chaitea/suites/*/*/packets*
+test/chaitea/suites/*/*/policy*
+test/chaitea/suites/*/*/prebuilt*
+test/chaitea/suites/*/*/openocd.tcl
+test/chaitea/suites/*/*/.cysecuretools
+test/chaitea/suites/*/*/*.code-workspace
+test/chaitea/suites/*/*/chaitea_pins*
+test/chaitea/suites/*/*/*.lib
+test/chaitea/*.json
+test/chaitea/chaitea-core
+test/chaitea/output
+# Ignoring group specific mtb files because the groups should append
+# the ".ctmpl" extension to mark group specific mtb files as templates
+# for remote overrides to work.
+test/chaitea/suites/*/*/*.mtb
+test/chaitea/suites/*/*/*/*.mtb
+test/uut/deps/cmsis-dsp/CMakeFiles/
+
+# temporary directory sometimes created by asset template
+.cache

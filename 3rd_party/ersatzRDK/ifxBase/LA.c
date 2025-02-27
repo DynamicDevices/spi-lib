@@ -33,16 +33,15 @@
 ==============================================================================
 */
 
-#include <stdbool.h>
 
-#include "ifxBase/LA.h"
-#include "ifxBase/Complex.h"
-#include "ifxBase/Defines.h"
-#include "ifxBase/internal/Macros.h"
-#include "ifxBase/Math.h"
-#include "ifxBase/Mem.h"
-#include "ifxBase/Matrix.h"
-#include "ifxBase/Error.h"
+#include "LA.h"
+#include "Complex.h"
+#include "Defines.h"
+#include "Error.h"
+#include "internal/Macros.h"
+#include "Math.h"
+#include "Matrix.h"
+#include "Mem.h"
 
 /*
 ==============================================================================
@@ -61,6 +60,9 @@
    4. LOCAL DATA
 ==============================================================================
 */
+
+static const ifx_Complex_t complex_zero = IFX_COMPLEX_DEF(0, 0);
+static const ifx_Complex_t complex_one = IFX_COMPLEX_DEF(1, 0);
 
 /*
 ==============================================================================
@@ -199,7 +201,7 @@ static void lu_r_inplace(ifx_Matrix_R_t* A,
         // Find the maximum element in the current row
         for (uint32_t k = i; k < N; k++)
         {
-            const ifx_Float_t absA = ifx_math_abs_r(IFX_MAT_AT(A, P[k], i));
+            const ifx_Float_t absA = FABS(IFX_MAT_AT(A, P[k], i));
 
             if (absA > maxA)
             {
@@ -264,7 +266,7 @@ static void lu_r_inplace(ifx_Matrix_R_t* A,
  *
  */
 static void lu_c_inplace(ifx_Matrix_C_t* A,
-                         uint32_t* P, 
+                         uint32_t* P,
                          uint32_t* S)
 {
     // Check that P and A are not null, and A is a square matrix
@@ -325,7 +327,7 @@ static void lu_c_inplace(ifx_Matrix_C_t* A,
 
             for (uint32_t k = i + 1; k < N; k++)
             {
-                //IFX_MAT_AT(A, P[j], k) -= IFX_MAT_AT(A, P[j], i) * IFX_MAT_AT(A, P[i], k);
+                // IFX_MAT_AT(A, P[j], k) -= IFX_MAT_AT(A, P[j], i) * IFX_MAT_AT(A, P[i], k);
                 IFX_MAT_AT(A, P[j], k) = ifx_complex_sub(IFX_MAT_AT(A, P[j], k), ifx_complex_mul(IFX_MAT_AT(A, P[j], i), IFX_MAT_AT(A, P[i], k)));
             }
         }
@@ -352,8 +354,8 @@ static void lu_c_inplace(ifx_Matrix_C_t* A,
  *
  */
 static void lu_r(const ifx_Matrix_R_t* A,
-                 ifx_Matrix_R_t* LU, 
-                 uint32_t* P, 
+                 ifx_Matrix_R_t* LU,
+                 uint32_t* P,
                  uint32_t* S)
 {
     IFX_ERR_BRK_NULL(P);
@@ -491,11 +493,11 @@ static void lu_invert_c(const ifx_Matrix_C_t* LU,
         for (uint32_t i = 0; i < N; i++)
         {
             // This corresponds to the Kronecker delta
-            IFX_MAT_AT(inverse, i, j) = (P[i] == j) ? ifx_complex_one : ifx_complex_zero;
+            IFX_MAT_AT(inverse, i, j) = (P[i] == j) ? complex_one : complex_zero;
 
             for (uint32_t k = 0; k < i; k++)
             {
-                //IFX_MAT_AT(inverse, i, j) -= IFX_MAT_AT(LU, P[i], k) * IFX_MAT_AT(inverse, k, j);
+                // IFX_MAT_AT(inverse, i, j) -= IFX_MAT_AT(LU, P[i], k) * IFX_MAT_AT(inverse, k, j);
                 IFX_MAT_AT(inverse, i, j) = ifx_complex_sub(IFX_MAT_AT(inverse, i, j), ifx_complex_mul(IFX_MAT_AT(LU, P[i], k), IFX_MAT_AT(inverse, k, j)));
             }
         }
@@ -506,11 +508,11 @@ static void lu_invert_c(const ifx_Matrix_C_t* LU,
 
             for (uint32_t k = i + 1; k < N; k++)
             {
-                //IFX_MAT_AT(inverse, i, j) -= IFX_MAT_AT(LU, P[i], k) * IFX_MAT_AT(inverse, k, j);
+                // IFX_MAT_AT(inverse, i, j) -= IFX_MAT_AT(LU, P[i], k) * IFX_MAT_AT(inverse, k, j);
                 IFX_MAT_AT(inverse, i, j) = ifx_complex_sub(IFX_MAT_AT(inverse, i, j), ifx_complex_mul(IFX_MAT_AT(LU, P[i], k), IFX_MAT_AT(inverse, k, j)));
             }
 
-            //IFX_MAT_AT(inverse, i, j) = IFX_MAT_AT(inverse, i, j) / IFX_MAT_AT(LU, P[i], i);
+            // IFX_MAT_AT(inverse, i, j) = IFX_MAT_AT(inverse, i, j) / IFX_MAT_AT(LU, P[i], i);
             IFX_MAT_AT(inverse, i, j) = ifx_complex_div(IFX_MAT_AT(inverse, i, j), IFX_MAT_AT(LU, P[i], i));
         }
     }
@@ -610,7 +612,7 @@ static void cholesky_c_inplace(ifx_Matrix_C_t* A)
 
             for (uint32_t k = 0; k < i; k++)
             {
-                //sum -= IFX_MAT_AT(A, i, k) * IFX_MAT_AT(A, j, k);
+                // sum -= IFX_MAT_AT(A, i, k) * IFX_MAT_AT(A, j, k);
                 const ifx_Complex_t Aik = IFX_MAT_AT(A, i, k);
                 const ifx_Complex_t Ajk = IFX_MAT_AT(A, j, k);
                 sum_c = ifx_complex_sub(sum_c, ifx_complex_mul(ifx_complex_conj(Aik), Ajk));
@@ -671,7 +673,7 @@ static void determinant_r_inplace(ifx_Matrix_R_t* A,
     P = ifx_mem_alloc(sizeof(uint32_t) * N);
     IFX_ERR_BRF_MEMALLOC(P);
 
-    // Aave old error
+    // Save old error
     ifx_Error_t error_old = ifx_error_get_and_clear();
 
     // Perform LU decomposition
@@ -702,7 +704,7 @@ static void determinant_r_inplace(ifx_Matrix_R_t* A,
 
     if (S % 2)
     {
-        *determinant = - *determinant;
+        *determinant = -*determinant;
     }
 
 fail:
@@ -745,7 +747,7 @@ static void determinant_c_inplace(ifx_Matrix_C_t* A,
     P = ifx_mem_alloc(sizeof(uint32_t) * N);
     IFX_ERR_BRF_MEMALLOC(P);
 
-    // Aave old error
+    // Save old error
     ifx_Error_t error_old = ifx_error_get_and_clear();
 
     // Perform LU decomposition
@@ -758,7 +760,7 @@ static void determinant_c_inplace(ifx_Matrix_C_t* A,
     {
         // Restore old error
         ifx_error_set_no_callback(error_old);
-        *determinant = ifx_complex_zero;
+        *determinant = complex_zero;
         goto fail;
     }
     else if (error_new == IFX_OK)
@@ -767,7 +769,7 @@ static void determinant_c_inplace(ifx_Matrix_C_t* A,
         ifx_error_set_no_callback(error_old);
     }
 
-    *determinant = ifx_complex_one;
+    *determinant = complex_one;
 
     for (uint32_t j = 0; j < N; j++)
     {
@@ -891,7 +893,7 @@ void ifx_la_cholesky_r(const ifx_Matrix_R_t* A,
     // Dimension
     const uint32_t N = mRows(A);
 
-    // Copy lower triangular elments from A to L, set elements of L above diagonal to 0
+    // Copy lower triangular elements from A to L, set elements of L above diagonal to 0
     for (uint32_t j = 0; j < N; j++)
     {
         // Copy diagonal and elements below diagonal from A
@@ -921,13 +923,13 @@ void ifx_la_cholesky_c(const ifx_Matrix_C_t* A, ifx_Matrix_C_t* L)
     // Dimension
     const uint32_t N = mRows(A);
 
-    // Copy lower triangular elments from A to L, set elements of L above diagonal to 0
+    // Copy lower triangular elements from A to L, set elements of L above diagonal to 0
     for (uint32_t j = 0; j < N; j++)
     {
         // Copy diagonal and elements below diagonal from A
         for (uint32_t k = 0; k <= j; k++)
         {
-            //IFX_MAT_AT(L, j, k) = IFX_MAT_AT(A, j, k);
+            // IFX_MAT_AT(L, j, k) = IFX_MAT_AT(A, j, k);
             const ifx_Complex_t Ajk = IFX_MAT_AT(A, j, k);
             IFX_COMPLEX_SET(IFX_MAT_AT(L, j, k), IFX_COMPLEX_REAL(Ajk), IFX_COMPLEX_IMAG(Ajk));
         }
@@ -935,7 +937,7 @@ void ifx_la_cholesky_c(const ifx_Matrix_C_t* A, ifx_Matrix_C_t* L)
         // Matrix elements above diagonal are zero
         for (uint32_t k = j + 1; k < N; k++)
         {
-            IFX_MAT_AT(L, j, k) = ifx_complex_zero;
+            IFX_MAT_AT(L, j, k) = complex_zero;
         }
     }
 

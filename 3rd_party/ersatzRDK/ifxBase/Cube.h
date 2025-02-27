@@ -38,19 +38,22 @@
 #ifndef IFX_BASE_CUBE_H
 #define IFX_BASE_CUBE_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include "ifxBase/Defines.h"
-#include "ifxBase/Matrix.h"
+#include "Defines.h"
+#include "Matrix.h"
+#include "Mda.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -58,19 +61,45 @@ extern "C"
 ==============================================================================
 */
 
-#define IFX_CUBE_ROWS(c)                ((c)->rows)
-#define IFX_CUBE_COLS(c)                ((c)->cols)
-#define IFX_CUBE_SLICES(c)              ((c)->slices)
-#define IFX_CUBE_DAT(c)                 ((c)->d)
-#define IFX_CUBE_SLICE_SIZE(c)          ((size_t)IFX_CUBE_ROWS(c) * (size_t)IFX_CUBE_COLS(c))
-#define IFX_CUBE_SIZE(c)                (IFX_CUBE_SLICE_SIZE(c) * (size_t)IFX_CUBE_SLICES(c))
-#define IFX_CUBE_SLICE_OFFSET(c, s)     ((size_t)IFX_CUBE_SLICE_SIZE(c) * (size_t)(s))
-#define IFX_CUBE_OFFSET(cub, r, c, s)   (IFX_CUBE_SLICE_OFFSET(cub, s) + (size_t)IFX_CUBE_COLS(cub) * (r) + (size_t)(c))
-#define IFX_CUBE_SLICE_AT(c, s)         (IFX_CUBE_DAT(c)[IFX_CUBE_SLICE_OFFSET(c, s)])
-#define IFX_CUBE_AT(cub, r, c, s)       (IFX_CUBE_DAT(cub)[IFX_CUBE_OFFSET(cub, r, c, s)])
+#define IFX_CUBE_ROWS(c)              (IFX_MDA_SHAPE(c)[0])
+#define IFX_CUBE_COLS(c)              (IFX_MDA_SHAPE(c)[1])
+#define IFX_CUBE_SLICES(c)            (IFX_MDA_SHAPE(c)[2])
+#define IFX_CUBE_STRIDE(c, i)         (IFX_MDA_STRIDE(c)[i])
+#define IFX_CUBE_DAT(c)               IFX_MDA_DATA(c)
+#define IFX_CUBE_SLICE_SIZE(c)        ((size_t)IFX_CUBE_ROWS(c) * (size_t)IFX_CUBE_COLS(c))
+#define IFX_CUBE_SIZE(c)              (IFX_CUBE_SLICE_SIZE(c) * (size_t)IFX_CUBE_SLICES(c))
+#define IFX_CUBE_OFFSET(cub, r, c, s) IFX_MDA_OFFSET(cub, r, c, s)
 
-#define IFX_CUBE_BRK_DIM(c1, c2)        IFX_ERR_BRK_COND((IFX_CUBE_ROWS(c1) != IFX_CUBE_ROWS(c2)) || (IFX_CUBE_COLS(c1) != IFX_CUBE_COLS(c2)) || (IFX_CUBE_SLICES(c1) != IFX_CUBE_SLICES(c2)), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_CUBE_BRV_DIM(c1, c2, a)     IFX_ERR_BRV_COND((IFX_CUBE_ROWS(c1) != IFX_CUBE_ROWS(c2)) || (IFX_CUBE_COLS(c1) != IFX_CUBE_COLS(c2)) || (IFX_CUBE_SLICES(c1) != IFX_CUBE_SLICES(c2)), IFX_ERROR_DIMENSION_MISMATCH, a)
+#define IFX_CUBE_BRK_VALID(c)                                                       \
+    do                                                                              \
+    {                                                                               \
+        IFX_ERR_BRK_NULL(c);                                                        \
+        IFX_ERR_BRK_COND(IFX_MDA_DIMENSIONS(c) != 3, IFX_ERROR_DIMENSION_MISMATCH); \
+        IFX_ERR_BRK_ARGUMENT(IFX_MDA_DATA(c) == NULL);                              \
+    } while (0)
+
+#define IFX_CUBE_BRV_VALID(c, r)                                                       \
+    do                                                                                 \
+    {                                                                                  \
+        IFX_ERR_BRV_NULL(c, r);                                                        \
+        IFX_ERR_BRV_COND(IFX_MDA_DIMENSIONS(c) != 3, IFX_ERROR_DIMENSION_MISMATCH, r); \
+        IFX_ERR_BRV_ARGUMENT(IFX_MDA_DATA(c) == NULL, r);                              \
+    } while (0)
+
+/** @brief Access cube element
+ *
+ * The macro can be used to set and get elements of a cube, for example:
+ * @code
+ * foo = IFX_CUBE_AT(cube, row, col, slice);
+ * IFX_CUBE_AT(cube, row, col, slice) = bar;
+ * @endcode
+ *
+ * The macro works with both real (\ref ifx_Cube_R_t) and complex (\ref ifx_Cube_C_t) cubes.
+ */
+#define IFX_CUBE_AT(cub, r, c, s) IFX_MDA_AT(cub, r, c, s)
+
+#define IFX_CUBE_BRK_DIM(c1, c2)    IFX_ERR_BRK_COND((IFX_CUBE_ROWS(c1) != IFX_CUBE_ROWS(c2)) || (IFX_CUBE_COLS(c1) != IFX_CUBE_COLS(c2)) || (IFX_CUBE_SLICES(c1) != IFX_CUBE_SLICES(c2)), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_CUBE_BRV_DIM(c1, c2, a) IFX_ERR_BRV_COND((IFX_CUBE_ROWS(c1) != IFX_CUBE_ROWS(c2)) || (IFX_CUBE_COLS(c1) != IFX_CUBE_COLS(c2)) || (IFX_CUBE_SLICES(c1) != IFX_CUBE_SLICES(c2)), IFX_ERROR_DIMENSION_MISMATCH, a)
 
 
 /*
@@ -80,40 +109,14 @@ extern "C"
 */
 
 /**
- * @brief Defines the structure for real Cube data core parameters.
- *        Use type ifx_Cube_R_t for this struct.
- */
-struct ifx_Cube_R_s
-{
-    ifx_Float_t* d;
-    uint32_t rows;
-    uint32_t cols;
-    uint32_t slices;
-    uint8_t owns_d;
-};
-
-/**
- * @brief Defines the structure for complex Cube data core parameters.
- *        Use type ifx_Cube_C_t for this struct.
- */
-struct ifx_Cube_C_s
-{
-    ifx_Complex_t* d;
-    uint32_t rows;
-    uint32_t cols;
-    uint32_t slices;
-    uint8_t owns_d;
-};
-
-/**
  * @brief Forward declaration structure to operate on real Cube.
  */
-typedef struct ifx_Cube_R_s ifx_Cube_R_t;
+typedef ifx_Mda_R_t ifx_Cube_R_t;
 
 /**
  * @brief Forward declaration structure to operate on complex Cube.
  */
-typedef struct ifx_Cube_C_s ifx_Cube_C_t;
+typedef ifx_Mda_C_t ifx_Cube_C_t;
 
 /*
 ==============================================================================
@@ -122,53 +125,16 @@ typedef struct ifx_Cube_C_s ifx_Cube_C_t;
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_cube Cube
-  * @brief API for operations on Cube data structures
-  *
-  * Supports operations on Cube (array of matrices) data structures.
-  *
-  * @{
-  */
-
-/**
- * @brief Initializes a real cube \ref ifx_Cube_R_t with a data element of
- *        specified size, to prevent memory allocation on the heap.
+ * @brief API for operations on Cube data structures
  *
- * @param [in]     cube      Pointer to an allocated cube instance defined
- *                           by \ref ifx_Cube_R_t to be initialized.
- * @param [in]     data      Data pointer to assign the cube.
- * @param [in]     rows      Number of rows in the cube.
- * @param [in]     columns   Number of columns in the cube.
- * @param [in]     slices    Number of slices in the cube.
+ * Supports operations on Cube (array of matrices) data structures.
  *
+ * @{
  */
-IFX_DLL_PUBLIC
-void ifx_cube_init_r(ifx_Cube_R_t* cube,
-                     ifx_Float_t* data,
-                     uint32_t rows,
-                     uint32_t columns,
-                     uint32_t slices);
-
-/**
- * @brief Initializes a complex cube \ref ifx_Cube_C_t with a data element of
- *        specified size, to prevent memory allocation on the heap.
- *
- * @param [in]     cube      Pointer to an allocated cube instance defined
- *                           by \ref ifx_Cube_C_t to be initialized.
- * @param [in]     data      Data pointer to assign the cube.
- * @param [in]     rows      Number of rows in the cube.
- * @param [in]     columns   Number of columns in the cube.
- * @param [in]     slices    Number of slices in the cube.
- */
-IFX_DLL_PUBLIC
-void ifx_cube_init_c(ifx_Cube_C_t* cube,
-                     ifx_Complex_t* data,
-                     uint32_t rows,
-                     uint32_t columns,
-                     uint32_t slices);
 
 /**
  * @brief Allocates memory for a real cube with a specified number of
@@ -203,26 +169,6 @@ IFX_DLL_PUBLIC
 ifx_Cube_C_t* ifx_cube_create_c(uint32_t rows,
                                 uint32_t columns,
                                 uint32_t slices);
-
-/**
- * @brief De-initializes a real cube \ref ifx_Cube_R_t.
- *
- * @param [in]     cube      Pointer to an allocated cube instance defined
- *                           by \ref ifx_Cube_R_t to be de-initialized.
- *
- */
-IFX_DLL_PUBLIC
-void ifx_cube_deinit_r(ifx_Cube_R_t* cube);
-
-/**
- * @brief De-initializes a complex cube \ref ifx_Cube_R_t.
- *
- * @param [in]     cube      Pointer to an allocated cube instance defined
- *                           by \ref ifx_Cube_C_t to be de-initialized.
- *
- */
-IFX_DLL_PUBLIC
-void ifx_cube_deinit_c(ifx_Cube_C_t* cube);
 
 /**
  * @brief Frees memory for a real cube defined by \ref ifx_cube_create_r
@@ -269,6 +215,7 @@ void ifx_cube_copy_c(const ifx_Cube_C_t* cube, ifx_Cube_C_t* target);
  *
  * @return Cloned cube
  */
+IFX_DLL_PUBLIC
 ifx_Cube_R_t* ifx_cube_clone_r(const ifx_Cube_R_t* cube);
 
 /**
@@ -278,49 +225,104 @@ ifx_Cube_R_t* ifx_cube_clone_r(const ifx_Cube_R_t* cube);
  *
  * @return Cloned cube
  */
+IFX_DLL_PUBLIC
 ifx_Cube_C_t* ifx_cube_clone_c(const ifx_Cube_C_t* cube);
 
 /**
- * @brief Returns a slice of the a real cube in form
+ * @brief Returns a slice of a real cube in the form
  *        of a matrix of type \ref ifx_Matrix_R_t
+ * The rows and columns of the output matrix correspond to the
+ * rows and columns of the cube respectively
  *
- * @param [in]     cube                Pointer to real cube which slice shall be returned.
+ * @param [in]     cube                Pointer to real cube from which slice shall be returned.
  * @param [in]     slice_index         index of slice to be returned.
  * @param [out]    slice               real matrix output representing the slice.
  *
  */
 IFX_DLL_PUBLIC
-void ifx_cube_get_slice_r(ifx_Cube_R_t* cube,
+void ifx_cube_get_slice_r(const ifx_Cube_R_t* cube,
                           uint32_t slice_index,
                           ifx_Matrix_R_t* slice);
 
 /**
- * @brief Returns a slice of the a complex cube in form
+ * @brief Returns a slice of a complex cube in the form
  *        of a matrix of type \ref ifx_Matrix_C_t
+ * The rows and columns of the output matrix correspond to the
+ * rows and columns of the cube respectively
  *
- * @param [in]     cube                Pointer to real cube which slice shall be returned.
+ * @param [in]     cube                Pointer to complex cube from which slice shall be returned.
  * @param [in]     slice_index         Index of slice to be returned.
  * @param [out]    slice               Complex matrix output representing the slice.
  *
  */
 IFX_DLL_PUBLIC
-void ifx_cube_get_slice_c(ifx_Cube_C_t* cube,
+void ifx_cube_get_slice_c(const ifx_Cube_C_t* cube,
                           uint32_t slice_index,
                           ifx_Matrix_C_t* slice);
 
 /**
- * @brief Returns a the absolute values of a slice of the a complex cube in form
- *        of a matrix of type \ref ifx_Matrix_C_t.
+ * @brief Returns a 2-d row of a real cube in the form
+ *        of a matrix of type \ref ifx_Matrix_R_t
+ * The rows and columns of the output matrix correspond to the
+ * columns and slices of the cube respectively
  *
- * @param [in]     cube                Pointer to real cube which slice shall be returned.
- * @param [in]     slice_index         Index of slice to be returned.
- * @param [out]    slice               Complex matrix output representing the slice.
+ * @param [in]     cube                Pointer to real cube from which a row matrix shall be returned.
+ * @param [in]     row_index           index of row to be returned as a matrix.
+ * @param [out]    row_matrix          real matrix output representing the 2-d row.
  *
  */
 IFX_DLL_PUBLIC
-void ifx_cube_slice_abs_r(ifx_Cube_C_t* cube,
-                          uint32_t slice_index,
-                          ifx_Matrix_R_t* slice);
+void ifx_cube_get_row_r(const ifx_Cube_R_t* cube,
+                        uint32_t row_index,
+                        ifx_Matrix_R_t* row_matrix);
+
+/**
+ * @brief Returns a 2-d row of a complex cube in the form
+ *        of a matrix of type \ref ifx_Matrix_C_t
+ * The rows and columns of the output matrix correspond to the
+ * columns and slices of the cube respectively
+ *
+ * @param [in]     cube                Pointer to complex cube from which a row matrix shall be returned.
+ * @param [in]     row_index           Index of row to be returned as a matrix.
+ * @param [out]    row_matrix          Complex matrix output representing the 2-d row.
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_cube_get_row_c(const ifx_Cube_C_t* cube,
+                        uint32_t row_index,
+                        ifx_Matrix_C_t* row_matrix);
+
+/**
+ * @brief Returns a 2-d column of a real cube in the form
+ *        of a matrix of type \ref ifx_Matrix_R_t
+ * The rows and columns of the output matrix correspond to the
+ * rows and slices of the cube respectively
+ *
+ * @param [in]     cube                Pointer to real cube which a column matrix shall be returned.
+ * @param [in]     col_index           index of column to be returned as a matrix.
+ * @param [out]    col_matrix          real matrix output representing the 2-d column.
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_cube_get_col_r(const ifx_Cube_R_t* cube,
+                        uint32_t col_index,
+                        ifx_Matrix_R_t* col_matrix);
+
+/**
+ * @brief Returns a 2-d column of a complex cube in the form
+ *        of a matrix of type \ref ifx_Matrix_C_t
+ * The rows and columns of the output matrix correspond to the
+ * rows and slices of the cube respectively
+ *
+ * @param [in]     cube                Pointer to complex cube from which a column matrix shall be returned.
+ * @param [in]     col_index           Index of column to be returned as a matrix.
+ * @param [out]    col_matrix          Complex matrix output representing the 2-d column.
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_cube_get_col_c(const ifx_Cube_C_t* cube,
+                        uint32_t col_index,
+                        ifx_Matrix_C_t* col_matrix);
 
 /**
  * @brief Returns a real matrix extracted of a specified column, absolute values,
@@ -333,7 +335,7 @@ void ifx_cube_slice_abs_r(ifx_Cube_C_t* cube,
  *
  */
 IFX_DLL_PUBLIC
-void ifx_cube_col_abs_r(ifx_Cube_C_t* cube,
+void ifx_cube_col_abs_r(const ifx_Cube_C_t* cube,
                         uint32_t column_index,
                         ifx_Matrix_R_t* matrix);
 
@@ -341,7 +343,7 @@ void ifx_cube_col_abs_r(ifx_Cube_C_t* cube,
  * @brief Clears all elements of real cube defined by \ref ifx_Cube_R_t.
  *
  * @param [in]     cube      Pointer to real cube to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_cube_clear_r(ifx_Cube_R_t* cube);
@@ -350,27 +352,21 @@ void ifx_cube_clear_r(ifx_Cube_R_t* cube);
  * @brief Clears all elements of complex cube defined by \ref ifx_Cube_C_t.
  *
  * @param [in]     cube      Pointer to complex cube to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_cube_clear_c(ifx_Cube_C_t* cube);
 
-IFX_DLL_PUBLIC
-void ifx_cube_setall_r(ifx_Cube_R_t* cube, ifx_Float_t value);
-
-IFX_DLL_PUBLIC
-void ifx_cube_setall_c(ifx_Cube_C_t* cube, ifx_Complex_t value);
+/**
+ * @}
+ */
 
 /**
-  * @}
-  */
- 
-/**
-  * @}
-  */ 
+ * @}
+ */
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_CUBE_H */

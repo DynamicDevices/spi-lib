@@ -26,9 +26,15 @@
 ** POSSIBILITY OF SUCH DAMAGE.
 ** ===========================================================================
 */
+
 #ifndef IFX_BASE_INTERNAL_NON_COPYABLE_H
 #define IFX_BASE_INTERNAL_NON_COPYABLE_H
 
-#define NONCOPYABLE(Type) Type(const Type&)=delete; Type& operator=(const Type&)=delete
+// NOLINTNEXTLINE
+#define NONCOPYABLE(Type)                  \
+    Type(const Type&) = delete;            \
+    Type& operator=(const Type&) = delete; \
+    Type(Type&&) = delete;                 \
+    Type& operator=(Type&&) = delete
 
 #endif /* IFX_BASE_INTERNAL_NON_COPYABLE_H */

@@ -104,6 +104,16 @@ int main(int argc, char* argv[])
 
         rep_mark_frame_processing_start();
 
+        rep_msg("%f %f %f %f", 
+            IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
+            IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
+            IFX_CUBE_AT(radar_data_frame, 0, 2, 0),
+            IFX_CUBE_AT(radar_data_frame, 0, 3, 0)); 
+        /*rep_msg("%d %d %d\n", 
+            radar_data_frame->rows, 
+            radar_data_frame->cols, 
+            radar_data_frame->slices); */
+
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
             rep_msg("frame limit reached, aborting.\n");

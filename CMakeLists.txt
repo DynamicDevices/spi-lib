@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.14)
-project(spi-dev)
+project(spi-dev-utr11)
 
 set(STV_3RD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake;${CMAKE_MODULE_PATH}")
 
 ## Add sdk_base_obj
 set(RDK_HAS_DEVICE_CONTROL FALSE)
+add_subdirectory("${STV_3RD_PARTY_DIR}/3rd_party" EXCLUDE_FROM_ALL)
 add_subdirectory("${STV_3RD_PARTY_DIR}/ersatzRDK" EXCLUDE_FROM_ALL)
+#add_subdirectory("${STV_3RD_PARTY_DIR}/examples/" EXCLUDE_FROM_ALL)
+#add_subdirectory("${STV_3RD_PARTY_DIR}/tools/" EXCLUDE_FROM_ALL)
 
 ## determine the target platform
 include(TargetPlatform)
@@ -22,13 +25,9 @@ file(GLOB app_main_src
 	modules/app/main/*.c modules/app/main/*.h
 	)
 
-file(GLOB app_bridge_src
-	modules/app/bridge/*.c modules/app/bridge/*.h
-)
-
 add_library(app_main_lib STATIC ${app_main_src})
 target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj)
-
+	
 file(GLOB app_framework_src
 		public/interface/*.h
 		modules/app/framework/*.c modules/app/framework/*.h
@@ -36,7 +35,7 @@ file(GLOB app_framework_src
 
 add_library(app_framework_lib STATIC ${app_framework_src})
 target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base_obj)
-
+	
 file(GLOB app_stump_src
 		public/interface/*.h
 		modules/record/plaintext/*.c modules/record/plaintext/*.h
@@ -80,22 +79,9 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	add_library(lib_dev_spi STATIC ${lib_dev_spi_src})
 	target_link_libraries(lib_dev_spi PUBLIC interface_app interface_direct)
 
+	
 	add_executable(seamless_dev_spi ${app_main_src})
 	target_link_libraries(seamless_dev_spi PUBLIC app_stump_lib)
 	target_link_libraries(seamless_dev_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
 	target_link_libraries(seamless_dev_spi PUBLIC pthread)
-
-        ## Add protocol handler
-        add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/stratula/protocol" EXCLUDE_FROM_ALL)
-
-	add_executable(seamless_bridge_spi ${app_bridge_src})
-	target_link_libraries(seamless_bridge_spi PUBLIC app_stump_lib)
-	target_link_libraries(seamless_bridge_spi PUBLIC lib_acq_spi lib_direct lib_dev_spi)
-	target_link_libraries(seamless_bridge_spi PUBLIC pthread)
-	target_link_libraries(seamless_bridge_spi PUBLIC protocol_obj)
-
 endif ()
-
-# installation
-install(TARGETS seamless_dev_spi DESTINATION bin)
-install(TARGETS seamless_bridge_spi DESTINATION bin)

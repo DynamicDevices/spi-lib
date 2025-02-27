@@ -38,19 +38,22 @@
 #ifndef IFX_BASE_MATRIX_H
 #define IFX_BASE_MATRIX_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include "ifxBase/Types.h"
-#include "ifxBase/Vector.h"
+#include "Mda.h"
+#include "Types.h"
+#include "Vector.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -59,50 +62,67 @@ extern "C"
 */
 
 // Access macros -------------------------------------------------------------
-#define IFX_MAT_DAT(m)           ((m)->d)
-#define IFX_MAT_ROWS(m)          ((m)->rows)
-#define IFX_MAT_COLS(m)          ((m)->cols)
-#define IFX_MAT_LDA(m)           ((m)->lda)
-#define IFX_MAT_SIZE(m)          ((size_t)IFX_MAT_COLS(m) * (size_t)IFX_MAT_ROWS(m))
-#define IFX_MAT_OFFSET(m, r, c)  ((size_t)IFX_MAT_LDA(m) * (size_t)(r) + (size_t)(c))
-#define IFX_MAT_AT(m, r, c)      (IFX_MAT_DAT(m)[IFX_MAT_OFFSET(m, r, c)])
+#define IFX_MAT_DAT(m)          IFX_MDA_DATA(m)
+#define IFX_MAT_ROWS(m)         (IFX_MDA_SHAPE(m)[0])
+#define IFX_MAT_COLS(m)         (IFX_MDA_SHAPE(m)[1])
+#define IFX_MAT_STRIDE(m, i)    (IFX_MDA_STRIDE(m)[i])
+#define IFX_MAT_SIZE(m)         ((size_t)IFX_MAT_COLS(m) * (size_t)IFX_MAT_ROWS(m))
+#define IFX_MAT_OFFSET(m, r, c) IFX_MDA_OFFSET(m, r, c)
+
+/** @brief Access matrix element
+ *
+ * The macro can be used to set and get elements of a matrix, for example:
+ * @code
+ * foo = IFX_MAT_AT(matrix, row, col);
+ * IFX_MAT_AT(matrix, row, col) = bar;
+ * @endcode
+ *
+ * The macro works with both real (\ref ifx_Matrix_R_t) and complex (\ref ifx_Matrix_C_t) matrices.
+ */
+#define IFX_MAT_AT(m, r, c) IFX_MDA_AT(m, r, c)
 
 // Condition check macro adaptations for Matrix module -----------------------
-#define IFX_MAT_BRK_DIM(m1, m2)         IFX_ERR_BRK_COND((mCols(m1) != mCols(m2)) || (mRows(m1) != mRows(m2)), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_DIM(m1, m2, v)      IFX_ERR_BRV_COND((mCols(m1) != mCols(m2)) || (mRows(m1) != mRows(m2)), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_DIM(m1, m2)    IFX_ERR_BRK_COND((mCols(m1) != mCols(m2)) || (mRows(m1) != mRows(m2)), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_DIM(m1, m2, v) IFX_ERR_BRV_COND((mCols(m1) != mCols(m2)) || (mRows(m1) != mRows(m2)), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_SIZE(m1, m2)        IFX_ERR_BRK_COND(mSize(m1) != mSize(m2), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_SIZE(m1, m2, v)     IFX_ERR_BRV_COND(mSize(m1) != mSize(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_SIZE(m1, m2)    IFX_ERR_BRK_COND(mSize(m1) != mSize(m2), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_SIZE(m1, m2, v) IFX_ERR_BRV_COND(mSize(m1) != mSize(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_SQUARE(m)           IFX_ERR_BRK_COND(mRows(m) != mCols(m), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_SQUARE(m, v)        IFX_ERR_BRV_COND(mRows(m) != mCols(m), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_SQUARE(m)    IFX_ERR_BRK_COND(mRows(m) != mCols(m), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_SQUARE(m, v) IFX_ERR_BRV_COND(mRows(m) != mCols(m), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_DIM_COL_ROW(m1, m2)     IFX_ERR_BRK_COND(mCols(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_DIM_COL_ROW(m1, m2, v)  IFX_ERR_BRV_COND(mCols(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_DIM_COL_ROW(m1, m2)    IFX_ERR_BRK_COND(mCols(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_DIM_COL_ROW(m1, m2, v) IFX_ERR_BRV_COND(mCols(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_DIM_COL(m1, m2)     IFX_ERR_BRK_COND(mCols(m1) != mCols(m2), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_DIM_COL(m1, m2, v)  IFX_ERR_BRV_COND(mCols(m1) != mCols(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_DIM_COL(m1, m2)    IFX_ERR_BRK_COND(mCols(m1) != mCols(m2), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_DIM_COL(m1, m2, v) IFX_ERR_BRV_COND(mCols(m1) != mCols(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_DIM_ROW(m1, m2)     IFX_ERR_BRK_COND(mRows(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_MAT_BRV_DIM_ROW(m1, m2, v)  IFX_ERR_BRV_COND(mRows(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
+#define IFX_MAT_BRK_DIM_ROW(m1, m2)    IFX_ERR_BRK_COND(mRows(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_MAT_BRV_DIM_ROW(m1, m2, v) IFX_ERR_BRV_COND(mRows(m1) != mRows(m2), IFX_ERROR_DIMENSION_MISMATCH, v)
 
-#define IFX_MAT_BRK_IDX(m, r, c)        IFX_ERR_BRK_COND((r >= mRows(m)) || (c >= mCols(m)), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
-#define IFX_MAT_BRV_IDX(m, r, c, v)     IFX_ERR_BRV_COND((r >= mRows(m)) || (c >= mCols(m)), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
+#define IFX_MAT_BRK_IDX(m, r, c)    IFX_ERR_BRK_COND(((r) >= mRows(m)) || ((c) >= mCols(m)), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
+#define IFX_MAT_BRV_IDX(m, r, c, v) IFX_ERR_BRV_COND(((r) >= mRows(m)) || ((c) >= mCols(m)), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
 
-#define IFX_MAT_BRK_ROWS(m, r)          IFX_ERR_BRK_COND(r > mRows(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
-#define IFX_MAT_BRV_ROWS(m, r, v)       IFX_ERR_BRK_COND(r > mRows(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
+#define IFX_MAT_BRK_ROWS(m, r)    IFX_ERR_BRK_COND((r) > mRows(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
+#define IFX_MAT_BRV_ROWS(m, r, v) IFX_ERR_BRK_COND((r) > mRows(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
 
-#define IFX_MAT_BRK_COLS(m, c)          IFX_ERR_BRK_COND(c > mCols(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
-#define IFX_MAT_BRV_COLS(m, c, v)       IFX_ERR_BRK_COND(c > mCols(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
+#define IFX_MAT_BRK_COLS(m, c)    IFX_ERR_BRK_COND((c) > mCols(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS)
+#define IFX_MAT_BRV_COLS(m, c, v) IFX_ERR_BRK_COND((c) > mCols(m), IFX_ERROR_INDEX_OUT_OF_BOUNDS, v)
 
-#define IFX_MAT_BRK_VALID(m)  do {               \
-        IFX_ERR_BRK_NULL(m);                     \
-        IFX_ERR_BRK_ARGUMENT(mDat(m) == NULL)    \
-    } while(0)
-#define IFX_MAT_BRV_VALID(m, r)  do {            \
-        IFX_ERR_BRV_NULL(m, r);                  \
-        IFX_ERR_BRV_ARGUMENT(mDat(m) == NULL, r) \
-    } while(0)
+#define IFX_MAT_BRK_VALID(m)                                                        \
+    do                                                                              \
+    {                                                                               \
+        IFX_ERR_BRK_NULL(m);                                                        \
+        IFX_ERR_BRK_COND(IFX_MDA_DIMENSIONS(m) != 2, IFX_ERROR_DIMENSION_MISMATCH); \
+        IFX_ERR_BRK_ARGUMENT(IFX_MDA_DATA(m) == NULL)                               \
+    } while (0)
+#define IFX_MAT_BRV_VALID(m, r)                                                        \
+    do                                                                                 \
+    {                                                                                  \
+        IFX_ERR_BRV_NULL(m, r);                                                        \
+        IFX_ERR_BRV_COND(IFX_MDA_DIMENSIONS(m) != 2, IFX_ERROR_DIMENSION_MISMATCH, r); \
+        IFX_ERR_BRV_ARGUMENT(IFX_MDA_DATA(m) == NULL, r)                               \
+    } while (0)
 
 /*
 ==============================================================================
@@ -111,64 +131,15 @@ extern "C"
 */
 
 /**
-* @brief Forward declaration structure for real Matrix.
-*/
-    typedef struct ifx_Matrix_R_s ifx_Matrix_R_t;
+ * @brief Forward declaration structure for real Matrix.
+ */
+typedef ifx_Mda_R_t ifx_Matrix_R_t;
 
 /**
  * @brief Forward declaration structure for complex Matrix.
  */
-typedef struct ifx_Matrix_C_s ifx_Matrix_C_t;
+typedef ifx_Mda_C_t ifx_Matrix_C_t;
 
-/**
- * @brief Defines the structure for a two-dimensional floating point data array.
- *        Use type ifx_Matrix_R_t for this struct.
- *        Data length is fixed in this matrix i.e. matrix neither grows nor shrinks.
- *        The data is arranged sequentially in a row-major order (C order), i.e., all elements of a given row are
- *        placed in successive memory locations, as depicted in the illustrations.
- *
- * @image html img_matrix_memory_map_wiki.png "Illustration of row-major order" width=400px
- *
- * @image html img_matrix_memory_map_wiki_c.png "Illustration of accessing a matrix in row-major order in C (starting from index 0)" width=400px
- *
- * The above 2 images have been sourced from <a href="https://en.wikipedia.org/wiki/Row-_and_column-major_order">here</a>.
- *
- * @image html img_matrix_memory_map.png "Illustration showing memory arrangement of matrix data in ifx_Matrix_R_t " width=600px
- *
- */
-struct ifx_Matrix_R_s
-{
-    ifx_Float_t* d;          /**< Pointer to floating point memory containing data values */
-    uint32_t     rows;       /**< Number of rows in the matrix */
-    uint32_t     cols;       /**< Number of columns in the matrix */
-    uint32_t     lda : 31;   /**< Number of sequential memory locations to jump for the next row */
-    uint8_t      owns_d : 1; /**< Set to 1 if the matrix owns its data and has to free it */
-};
-
-/**
- * @brief Defines the structure for a two-dimensional Complex data array.
- *        Use type ifx_Matrix_C_t for this struct.
- *        Data length is fixed in this matrix i.e. matrix neither grows nor shrinks.
- *        The data is arranged sequentially in a row-major order, i.e., all elements of a given row are
- *        placed in successive memory locations, as depicted in the illustrations.
- *
- * @image html img_matrix_memory_map_wiki.png "Illustration of row-major order" width=400px
- *
- * @image html img_matrix_memory_map_wiki_c.png "Illustration of accessing a matrix in row-major order in C (starting from index 0)" width=400px
- *
- * The above 2 images have been sourced from <a href="https://en.wikipedia.org/wiki/Row-_and_column-major_order">here</a>.
- *
- * @image html img_matrix_memory_map.png "Illustration showing memory arrangement of matrix data in ifx_Matrix_C_t" width=600px
- *
- */
-struct ifx_Matrix_C_s
-{
-    ifx_Complex_t* d;          /**< Pointer to floating point memory containing data values */
-    uint32_t       rows;       /**< Number of rows in the matrix */
-    uint32_t       cols;       /**< Number of columns in the matrix */
-    uint32_t       lda : 31;   /**< Number of sequential memory locations to jump for the next row */
-    uint8_t        owns_d : 1; /**< Set to 1 if the matrix owns its data and has to free it */
-};
 
 /*
 ==============================================================================
@@ -177,54 +148,34 @@ struct ifx_Matrix_C_s
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_matrix Matrix
-  * @brief API for operations on Matrix data structures
-  *
-  * Supports matrix operations such as creation, destruction
-  *        and mathematical manipulations.
-  *
-  * @{
-  */
-
-/**
- * @brief Initializes a real matrix \ref ifx_Matrix_R_t with a data element of
- *        specified size, to prevent memory allocation on the heap.
+ * @brief API for operations on Matrix data structures
  *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_R_t
- * @param [in]     d         Data pointer to assign the matrix
- * @param [in]     rows      Number of rows
- * @param [in]     columns   Number of columns
+ * Supports matrix operations such as creation, destruction
+ *        and mathematical manipulations.
  *
+ * @{
  */
-IFX_DLL_PUBLIC
-void ifx_mat_init_r(ifx_Matrix_R_t* matrix,
-                    ifx_Float_t* d,
-                    const uint32_t rows,
-                    const uint32_t columns);
 
 /**
- * @brief Initializes a complex matrix \ref ifx_Matrix_C_t with a data element of
- *        specified size, to prevent memory allocation on the heap.
+ * @brief Assigns real raw data to the \ref ifx_Matrix_R_t structure.
+ * Example usage:
  *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_C_t
- * @param [in]     d         Data pointer to assign the matrix
- * @param [in]     rows      Number of rows
- * @param [in]     columns   Number of columns
+ *   Given \ref ifx_Matrix_R_t out_matrix, dimensions of the matrix num_rows and num_cols
+ *   and real raw data in array arr_data of size num_rows * num_cols, one can assign:
+ * @code
+ *     ifx_mat_rawview_r(&out_matrix, arr_data, num_rows, num_cols, num_cols);
+ * @endcode
+ *   e.g. for 2x2 identity matrix one can assign:
+ * @code
+ *     ifx_Float_t arr_data[2*2] = {1, 0, 0, 1};
+ *     ifx_mat_rawview_r(&out_matrix, arr_data, 2, 2, 2);
+ * @endcode
  *
- */
-IFX_DLL_PUBLIC
-void ifx_mat_init_c(ifx_Matrix_C_t* matrix,
-                    ifx_Complex_t* d,
-                    const uint32_t rows,
-                    const uint32_t columns);
-
-/**
- * @brief ...
- *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_R_t
+ * @param [in,out] matrix    Pointer to data memory defined by \ref ifx_Matrix_R_t
  * @param [in]     d         Data pointer to assign the matrix
  * @param [in]     rows      Number of row
  * @param [in]     columns   Number of columns
@@ -234,14 +185,26 @@ void ifx_mat_init_c(ifx_Matrix_C_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_rawview_r(ifx_Matrix_R_t* matrix,
                        ifx_Float_t* d,
-                       const uint32_t rows,
-                       const uint32_t columns,
-                       const uint32_t lda);
+                       uint32_t rows,
+                       uint32_t columns,
+                       uint32_t lda);
 
 /**
- * @brief ...
+ * @brief Assigns complex raw data to the \ref ifx_Matrix_C_t structure.
+ * Example usage:
  *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_C_t
+ *   Given \ref ifx_Matrix_C_t out_matrix, dimensions of the matrix num_rows and num_cols
+ *   and complex data in array arr_data of size num_rows * num_cols, one can assign:
+ * @code
+ *     ifx_mat_rawview_c(&out_matrix, arr_data, num_rows, num_cols, num_cols);
+ * @endcode
+ *   e.g. for 2x2 matrix one can assign:
+ * @code
+ *     ifx_Complex_t arr_data[2*2] = {{1,1}, {0,0}, {0,0}, {1,1}};
+ *     ifx_mat_rawview_c(&out_matrix, arr_data, 2, 2, 2);
+ * @endcode
+ *
+ * @param [in,out] matrix    Pointer to data memory defined by \ref ifx_Matrix_C_t
  * @param [in]     d         Data pointer to assign the matrix
  * @param [in]     rows      Number of rows
  * @param [in]     columns   Number of columns
@@ -251,14 +214,36 @@ void ifx_mat_rawview_r(ifx_Matrix_R_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_rawview_c(ifx_Matrix_C_t* matrix,
                        ifx_Complex_t* d,
-                       const uint32_t rows,
-                       const uint32_t columns,
-                       const uint32_t lda);
+                       uint32_t rows,
+                       uint32_t columns,
+                       uint32_t lda);
 
 /**
- * @brief ...
+ * @brief Assigns real data from source matrix to the destination matrix.
+ * Example usage:
  *
- * @param [in]     matrix              Pointer to data memory defined by \ref ifx_Matrix_R_t
+ *   Given \ref ifx_Matrix_R_t dest_matrix and \ref ifx_Matrix_R_t source_matrix,
+ *   dimensions of the dest_matrix num_rows and num_cols and
+ *   offset for rows and columns of source_matrix one can assign:
+ * @code
+ *     ifx_mat_view_r(&dest_matrix, &source_matrix, row_offset, col_offset, num_rows, num_cols);
+ * @endcode
+ *   e.g. for taking a view of 2x2 matrix from 3x3 matrix:
+ * @code
+ *     ifx_Float_t arr_data[3*3] = {1, 2, 3,
+ *                                  4, 5, 6,
+ *                                  7, 8, 9};
+ *     ifx_mat_rawview_r(&source_matrix, arr_data, 3, 3, 3);
+ *
+ *     ifx_mat_view_r(&dest_matrix, &source_matrix, 1, 1, 2, 2);
+ * @endcode
+ *     will give a dest_matrix with values:
+ * @code
+ *     [5, 6,
+ *      8, 9]
+ * @endcode
+ *
+ * @param [in,out] matrix              Pointer to data memory defined by \ref ifx_Matrix_R_t
  * @param [in]     source              Pointer to data memory defined by \ref ifx_Matrix_R_t
  * @param [in]     row_offset          Row offset
  * @param [in]     column_offset       Column offset
@@ -269,15 +254,35 @@ void ifx_mat_rawview_c(ifx_Matrix_C_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_view_r(ifx_Matrix_R_t* matrix,
                     ifx_Matrix_R_t* source,
-                    const uint32_t row_offset,
-                    const uint32_t column_offset,
-                    const uint32_t rows,
-                    const uint32_t columns);
+                    uint32_t row_offset,
+                    uint32_t column_offset,
+                    uint32_t rows,
+                    uint32_t columns);
 
 /**
- * @brief ...
+ * @brief Assigns complex data from source matrix to the destination matrix.
+ * Example usage:
  *
- * @param [in]     matrix              Pointer to data memory defined by \ref ifx_Matrix_C_t
+ *   Given \ref ifx_Matrix_C_t dest_matrix and \ref ifx_Matrix_C_t source_matrix,
+ *   dimensions of the dest_matrix num_rows and num_cols and
+ *   offset for rows and columns of source_matrix one can assign:
+ * @code
+ *     ifx_mat_view_c(&dest_matrix, &source_matrix, row_offset, col_offset, num_rows, num_cols);
+ * @endcode
+ *   e.g. for taking a view of 1x2 matrix from 2x2 matrix (second row):
+ * @code
+ *     ifx_Complex_t arr_data[2*2] = {{1, 1}, {2, 2}
+ *                                    {3, 3}, {4, 4}};
+ *     ifx_mat_rawview_c(&source_matrix, arr_data, 2, 2, 2);
+ *
+ *     ifx_mat_view_c(&dest_matrix, &source_matrix, 1, 0, 1, 2);
+ * @endcode
+ *     will give a dest_matrix with values:
+ * @code
+ *     [{3, 3}, {4, 4}]
+ * @endcode
+ *
+ * @param [in,out] matrix              Pointer to data memory defined by \ref ifx_Matrix_C_t
  * @param [in]     source              Pointer to data memory defined by \ref ifx_Matrix_C_t
  * @param [in]     row_offset          Row offset
  * @param [in]     column_offset       Column offset
@@ -288,15 +293,37 @@ void ifx_mat_view_r(ifx_Matrix_R_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_view_c(ifx_Matrix_C_t* matrix,
                     ifx_Matrix_C_t* source,
-                    const uint32_t row_offset,
-                    const uint32_t column_offset,
-                    const uint32_t rows,
-                    const uint32_t columns);
+                    uint32_t row_offset,
+                    uint32_t column_offset,
+                    uint32_t rows,
+                    uint32_t columns);
 
 /**
- * @brief ...
+ * @brief Assigns real data from source matrix given rows to the destination matrix.
+ * Example usage:
  *
- * @param [in]     matrix              Pointer to data memory defined by \ref ifx_Matrix_R_t
+ *   Given \ref ifx_Matrix_R_t dest_matrix and \ref ifx_Matrix_R_t source_matrix,
+ *   demanded number of rows num_rows and
+ *   offset for rows of source_matrix one can assign:
+ * @code
+ *     ifx_mat_view_rows_r(&dest_matrix, &source_matrix, row_offset, num_rows);
+ * @endcode
+ *   e.g. for taking a view of two last rows from 3x3 matrix:
+ * @code
+ *     ifx_Float_t arr_data[3*3] = {1, 2, 3,
+ *                                  4, 5, 6,
+ *                                  7, 8, 9};
+ *     ifx_mat_rawview_r(&source_matrix, arr_data, 3, 3, 3);
+ *
+ *     ifx_mat_view_rows_r(&dest_matrix, &source_matrix, 1, 2);
+ * @endcode
+ *     will give a dest_matrix with values:
+ * @code
+ *     [4, 5, 6,
+ *      7, 8, 9]
+ * @endcode
+ *
+ * @param [in,out] matrix              Pointer to data memory defined by \ref ifx_Matrix_R_t
  * @param [in]     source              Pointer to data memory defined by \ref ifx_Matrix_R_t
  * @param [in]     row_offset          Row offset
  * @param [in]     rows                Number of rows to view
@@ -305,13 +332,33 @@ void ifx_mat_view_c(ifx_Matrix_C_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_view_rows_r(ifx_Matrix_R_t* matrix,
                          ifx_Matrix_R_t* source,
-                         const uint32_t row_offset,
-                         const uint32_t rows);
+                         uint32_t row_offset,
+                         uint32_t rows);
 
 /**
- * @brief ...
+ * @brief Assigns complex data from source matrix given rows to the destination matrix.
+ * Example usage:
  *
- * @param [in]     matrix              Pointer to data memory defined by \ref ifx_Matrix_C_t
+ *   Given \ref ifx_Matrix_C_t dest_matrix and \ref ifx_Matrix_C_t source_matrix,
+ *   demanded number of rows num_rows and
+ *   offset for rows of source_matrix one can assign:
+ * @code
+ *     ifx_mat_view_rows_c(&dest_matrix, &source_matrix, row_offset, num_rows);
+ * @endcode
+ *   e.g. for taking a view of a last row from 2x2 matrix:
+ * @code
+ *     ifx_Complex_t arr_data[2*2] = {{1, 1}, {2, 2}
+ *                                    {3, 3}, {4, 4}};
+ *     ifx_mat_rawview_c(&source_matrix, arr_data, 2, 2, 2);
+ *
+ *     ifx_mat_view_rows_c(&dest_matrix, &source_matrix, 1, 1);
+ * @endcode
+ *     will give a matrix with values:
+ * @code
+ *     [{3, 3}, {4, 4}]
+ * @endcode
+ *
+ * @param [in,out] matrix              Pointer to data memory defined by \ref ifx_Matrix_C_t
  * @param [in]     source              Pointer to data memory defined by \ref ifx_Matrix_C_t
  * @param [in]     row_offset          Row offset
  * @param [in]     rows                Number of rows to view
@@ -319,8 +366,8 @@ void ifx_mat_view_rows_r(ifx_Matrix_R_t* matrix,
 IFX_DLL_PUBLIC
 void ifx_mat_view_rows_c(ifx_Matrix_C_t* matrix,
                          ifx_Matrix_C_t* source,
-                         const uint32_t row_offset,
-                         const uint32_t rows);
+                         uint32_t row_offset,
+                         uint32_t rows);
 
 /**
  * @brief Allocates memory for a real matrix with a specified number of
@@ -339,8 +386,8 @@ void ifx_mat_view_rows_c(ifx_Matrix_C_t* matrix,
  *
  */
 IFX_DLL_PUBLIC
-ifx_Matrix_R_t* ifx_mat_create_r(const uint32_t rows,
-                                 const uint32_t columns);
+ifx_Matrix_R_t* ifx_mat_create_r(uint32_t rows,
+                                 uint32_t columns);
 
 /**
  * @brief Allocates memory for a complex matrix with a specified number of
@@ -359,27 +406,8 @@ ifx_Matrix_R_t* ifx_mat_create_r(const uint32_t rows,
  *
  */
 IFX_DLL_PUBLIC
-ifx_Matrix_C_t* ifx_mat_create_c(const uint32_t rows,
-                                 const uint32_t columns);
-
-
-/**
- * @brief De-initializes a real matrix \ref ifx_Matrix_R_t
- *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_R_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_mat_deinit_r(ifx_Matrix_R_t* matrix);
-
-/**
- * @brief De-initializes a complex matrix \ref ifx_Matrix_C_t
- *
- * @param [in]     matrix    Pointer to data memory defined by \ref ifx_Matrix_C_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_mat_deinit_c(ifx_Matrix_C_t* matrix);
+ifx_Matrix_C_t* ifx_mat_create_c(uint32_t rows,
+                                 uint32_t columns);
 
 /**
  * @brief Frees memory for a real matrix defined by \ref ifx_mat_create_r
@@ -475,77 +503,13 @@ void ifx_mat_copy_c(const ifx_Matrix_C_t* from,
                     ifx_Matrix_C_t* to);
 
 /**
- * @brief Sets a user defined value at a given row, column location in a real matrix.
- *
- * @param [in,out] matrix    Pointer to an allocated and populated real valued
- *                           matrix instance defined by \ref ifx_Matrix_R_t
- * @param [in]     row       Row location where the value is to be set
- * @param [in]     column    Column location where the value is to be set
- * @param [in]     value     User defined value defined by \ref ifx_Float_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_mat_set_element_r(ifx_Matrix_R_t* matrix,
-                           uint32_t row,
-                           uint32_t column,
-                           ifx_Float_t value);
-
-/**
- * @brief Sets a user defined value at a given row, column location in a complex matrix.
- *
- * @param [in,out] matrix    Pointer to an allocated and populated complex valued
- *                           matrix instance defined by \ref ifx_Matrix_C_t
- * @param [in]     row       Row location where the value is to be set
- * @param [in]     column    Column location where the value is to be set
- * @param [in]     value     User defined value defined by \ref ifx_Complex_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_mat_set_element_c(ifx_Matrix_C_t* matrix,
-                           uint32_t row,
-                           uint32_t column,
-                           ifx_Complex_t value);
-
-/**
- * @brief Returns a user defined value set at a given row,column location in a real matrix.
- *
- * @param [in]     matrix    Pointer to an allocated and populated real valued
- *                           matrix instance defined by \ref ifx_Matrix_R_t
- * @param [in]     row       Row location where the value can be obtained
- * @param [in]     column    Column location where the value can be obtained
- *
- * @return Value at the specified index.
- *
- */
-IFX_DLL_PUBLIC
-ifx_Float_t ifx_mat_get_element_r(const ifx_Matrix_R_t* matrix,
-                                  uint32_t row,
-                                  uint32_t column);
-
-/**
- * @brief Returns a user defined value set at a given row, column location in a complex matrix.
- *
- * @param [in]     matrix    Pointer to an allocated and populated complex valued
- *                           matrix instance defined by \ref ifx_Matrix_C_t
- * @param [in]     row       Row location where the value can be obtained
- * @param [in]     column    Column location where the value can be obtained
- *
- * @return Value at the specified index.
- *
- */
-IFX_DLL_PUBLIC
-ifx_Complex_t ifx_mat_get_element_c(const ifx_Matrix_C_t* matrix,
-                                    uint32_t row,
-                                    uint32_t column);
-
-/**
  * @brief Copies a user defined sequence of real values to a user defined row index in a real matrix.
  *        The count of the input real values should not be greater than the number of columns in the matrix.
  *
- * @param [in,out] matrix              Pointer to an allocated and populated real valued
+ * @param [in,out] matrix              Pointer to an allocated and populated real-valued
  *                                     matrix instance defined by \ref ifx_Matrix_R_t
  * @param [in]     row_index           Row number that is to be filled by the user defined vector
- * @param [in]     row_values          Pointer to user defined vector defined by \ref ifx_Float_t
+ * @param [in]     row_values          Pointer to user defined vector defined by \see ifx_Float_t
  * @param [in]     count               Number of elements in the user defined vector
  *
  */
@@ -559,7 +523,7 @@ void ifx_mat_set_row_r(ifx_Matrix_R_t* matrix,
  * @brief Copies a user defined sequence of complex numbers values to a user defined row index in a complex matrix.
  *        The count of the input complex numbers should not be greater than the number of columns in the matrix.
  *
- * @param [in,out] matrix              Pointer to an allocated and populated complex valued
+ * @param [in,out] matrix              Pointer to an allocated and populated complex-valued
  *                                     matrix instance defined by \ref ifx_Matrix_C_t
  * @param [in]     row_index           Row number that is to be filled by the user defined vector
  * @param [in]     row_values          Pointer to User defined vector defined by \ref ifx_Complex_t
@@ -573,10 +537,10 @@ void ifx_mat_set_row_c(ifx_Matrix_C_t* matrix,
                        uint32_t count);
 
 /**
- * @brief Copies a user defined real valued vector \ref ifx_Vector_R_t to a user defined row index in a real matrix.
- *        The length of the input real valued matrix should not be greater than the number of columns in the matrix.
+ * @brief Copies a user defined real-valued vector \ref ifx_Vector_R_t to a user defined row index in a real matrix.
+ *        The length of the input real-valued matrix should not be greater than the number of columns in the matrix.
  *
- * @param [in,out] matrix              Pointer to an allocated and populated real valued
+ * @param [in,out] matrix              Pointer to an allocated and populated real-valued
  *                                     matrix instance defined by \ref ifx_Matrix_R_t
  * @param [in]     row_index           Row number that is to be filled by the user defined vector
  * @param [in]     row_values          Pointer to vector from which the data is to be copied to the specified row
@@ -588,10 +552,10 @@ void ifx_mat_set_row_vector_r(ifx_Matrix_R_t* matrix,
                               const ifx_Vector_R_t* row_values);
 
 /**
- * @brief Copies a user defined complex valued matrix \ref ifx_Vector_C_t to a user defined row index in a complex matrix.
- *        The length of the input complex valued matrix should not be greater than the number of columns in the matrix.
+ * @brief Copies a user defined complex-valued matrix \ref ifx_Vector_C_t to a user defined row index in a complex matrix.
+ *        The length of the input complex-valued matrix should not be greater than the number of columns in the matrix.
  *
- * @param [in,out] matrix              Pointer to an allocated and populated complex valued
+ * @param [in,out] matrix              Pointer to an allocated and populated complex-valued
  *                                     matrix instance defined by \ref ifx_Matrix_C_t
  * @param [in]     row_index           Row number that is to be filled by the user defined vector
  * @param [in]     row_values          Pointer to vector from which the data is to be copied to the specified row
@@ -603,7 +567,7 @@ void ifx_mat_set_row_vector_c(ifx_Matrix_C_t* matrix,
                               const ifx_Vector_C_t* row_values);
 
 /**
- * @brief Returns a complex valued matrix pointing to defined row of the given complex matrix.
+ * @brief Returns a complex-valued vector pointing to defined row of the given complex matrix.
  *
  * @param [in]     matrix              The complex matrix, from which one row would be pointed to by the output vector
  * @param [in]     row_index           The row of the matrix the vector will point to.
@@ -616,7 +580,7 @@ void ifx_mat_get_rowview_c(const ifx_Matrix_C_t* matrix,
                            ifx_Vector_C_t* row_view);
 
 /**
- * @brief Returns a real valued matrix pointing to defined row of the given real matrix.
+ * @brief Returns a real-valued vector pointing to defined row of the given real matrix.
  *
  * @param [in]     matrix              The real matrix, from which one row would be pointed to by the output vector
  * @param [in]     row_index           The row of the matrix the vector will point to.
@@ -629,7 +593,7 @@ void ifx_mat_get_rowview_r(const ifx_Matrix_R_t* matrix,
                            ifx_Vector_R_t* row_view);
 
 /**
- * @brief Returns a real valued matrix pointing to defined column of the given real matrix.
+ * @brief Returns a real-valued vector pointing to defined column of the given real matrix.
  *
  * @param [in]     matrix              The real matrix, from which one row would be pointed to by the output vector.
  * @param [in]     col_index           The row of the matrix the vector will point to.
@@ -642,7 +606,7 @@ void ifx_mat_get_colview_r(const ifx_Matrix_R_t* matrix,
                            ifx_Vector_R_t* col_view);
 
 /**
- * @brief Returns a complex valued matrix pointing to defined column of the given complex matrix.
+ * @brief Returns a complex-valued vector pointing to defined column of the given complex matrix.
  *
  * @param [in]     matrix              The complex matrix, from which one row would be pointed to by the output vector
  * @param [in]     col_index           The row of the matrix the vector will point to.
@@ -700,7 +664,7 @@ void ifx_mat_add_r(const ifx_Matrix_R_t* matrix_l,
 
 IFX_DLL_PUBLIC
 void ifx_mat_add_rs(const ifx_Matrix_R_t* input,
-                    const ifx_Float_t scalar,
+                    ifx_Float_t scalar,
                     ifx_Matrix_R_t* output);
 
 /**
@@ -722,7 +686,7 @@ void ifx_mat_add_c(const ifx_Matrix_C_t* matrix_l,
 
 IFX_DLL_PUBLIC
 void ifx_mat_add_cs(const ifx_Matrix_C_t* input,
-                    const ifx_Complex_t scalar,
+                    ifx_Complex_t scalar,
                     ifx_Matrix_C_t* output);
 
 /**
@@ -743,7 +707,7 @@ void ifx_mat_sub_r(const ifx_Matrix_R_t* matrix_l,
 
 IFX_DLL_PUBLIC
 void ifx_mat_sub_rs(const ifx_Matrix_R_t* input,
-                    const ifx_Float_t scalar,
+                    ifx_Float_t scalar,
                     ifx_Matrix_R_t* output);
 
 /**
@@ -764,7 +728,7 @@ void ifx_mat_sub_c(const ifx_Matrix_C_t* matrix_l,
 
 IFX_DLL_PUBLIC
 void ifx_mat_sub_cs(const ifx_Matrix_C_t* input,
-                    const ifx_Complex_t scalar,
+                    ifx_Complex_t scalar,
                     ifx_Matrix_C_t* output);
 
 /**
@@ -780,7 +744,7 @@ void ifx_mat_sub_cs(const ifx_Matrix_C_t* input,
  */
 IFX_DLL_PUBLIC
 void ifx_mat_scale_r(const ifx_Matrix_R_t* input,
-                     const ifx_Float_t scale,
+                     ifx_Float_t scale,
                      ifx_Matrix_R_t* output);
 
 /**
@@ -796,7 +760,7 @@ void ifx_mat_scale_r(const ifx_Matrix_R_t* input,
  */
 IFX_DLL_PUBLIC
 void ifx_mat_scale_rc(const ifx_Matrix_R_t* input,
-                      const ifx_Complex_t scale,
+                      ifx_Complex_t scale,
                       ifx_Matrix_C_t* output);
 
 /**
@@ -812,7 +776,7 @@ void ifx_mat_scale_rc(const ifx_Matrix_R_t* input,
  */
 IFX_DLL_PUBLIC
 void ifx_mat_scale_c(const ifx_Matrix_C_t* input,
-                     const ifx_Complex_t scale,
+                     ifx_Complex_t scale,
                      ifx_Matrix_C_t* output);
 
 /**
@@ -828,7 +792,7 @@ void ifx_mat_scale_c(const ifx_Matrix_C_t* input,
  */
 IFX_DLL_PUBLIC
 void ifx_mat_scale_cr(const ifx_Matrix_C_t* input,
-                      const ifx_Float_t scale,
+                      ifx_Float_t scale,
                       ifx_Matrix_C_t* output);
 
 /**
@@ -846,7 +810,7 @@ void ifx_mat_scale_cr(const ifx_Matrix_C_t* input,
 IFX_DLL_PUBLIC
 void ifx_mat_mac_r(const ifx_Matrix_R_t* m1,
                    const ifx_Matrix_R_t* m2,
-                   const ifx_Float_t scale,
+                   ifx_Float_t scale,
                    ifx_Matrix_R_t* result);
 
 /**
@@ -865,7 +829,7 @@ void ifx_mat_mac_r(const ifx_Matrix_R_t* m1,
 IFX_DLL_PUBLIC
 void ifx_mat_mac_c(const ifx_Matrix_C_t* m1,
                    const ifx_Matrix_C_t* m2,
-                   const ifx_Complex_t scale,
+                   ifx_Complex_t scale,
                    ifx_Matrix_C_t* result);
 
 /**
@@ -893,7 +857,7 @@ void ifx_mat_abs_c(const ifx_Matrix_C_t* input,
                    ifx_Matrix_R_t* output);
 
 /**
- * @brief Computes the arithmetic sum of a real valued matrix.
+ * @brief Computes the arithmetic sum of a real-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_R_t
  *                           to calculate the sum of all its elements.
@@ -905,7 +869,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_sum_r(const ifx_Matrix_R_t* matrix);
 
 /**
- * @brief Computes the arithmetic sum from a complex valued matrix.
+ * @brief Computes the arithmetic sum from a complex-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_C_t
  *                           to calculate the sum of all its elements.
@@ -917,7 +881,7 @@ IFX_DLL_PUBLIC
 ifx_Complex_t ifx_mat_sum_c(const ifx_Matrix_C_t* matrix);
 
 /**
- * @brief Computes the sum of squared values of a given real valued matrix.
+ * @brief Computes the sum of squared values of a given real-valued matrix.
  *
  * @param [in]     matrix    Pointer to the memory containing array defined by \ref ifx_Matrix_R_t
  *
@@ -928,7 +892,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_sqsum_r(const ifx_Matrix_R_t* matrix);
 
 /**
- * @brief Computes the sum of squared values of a given complex valued matrix.
+ * @brief Computes the sum of squared values of a given complex-valued matrix.
  *
  * @param [in]     matrix    Pointer to the memory containing array defined by \ref ifx_Matrix_C_t
  *
@@ -939,7 +903,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_sqsum_c(const ifx_Matrix_C_t* matrix);
 
 /**
- * @brief Returns the biggest absolute value of a given real valued matrix.
+ * @brief Returns the biggest absolute value of a given real-valued matrix.
  *
  * @param [in]     matrix    Pointer to the memory containing array defined by \ref ifx_Matrix_R_t.
  *
@@ -950,7 +914,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_maxabs_r(const ifx_Matrix_R_t* matrix);
 
 /**
- * @brief Returns the maximum absolute value of a given complex valued matrix.
+ * @brief Returns the maximum absolute value of a given complex-valued matrix.
  *
  * @param [in]     matrix    Pointer to the memory containing array defined by \ref ifx_Matrix_C_t.
  *
@@ -961,7 +925,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_maxabs_c(const ifx_Matrix_C_t* matrix);
 
 /**
- * @brief Computes the arithmetic mean from a real valued matrix.
+ * @brief Computes the arithmetic mean from a real-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_R_t
  *                           from which mean is calculated.
@@ -973,7 +937,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_mean_r(const ifx_Matrix_R_t* matrix);
 
 /**
- * @brief Computes the arithmetic mean from a complex valued matrix.
+ * @brief Computes the arithmetic mean from a complex-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_C_t
  *                           from which mean is calculated.
@@ -985,7 +949,7 @@ IFX_DLL_PUBLIC
 ifx_Complex_t ifx_mat_mean_c(const ifx_Matrix_C_t* matrix);
 
 /**
- * @brief Returns the maximum value of a real valued matrix.
+ * @brief Returns the maximum value of a real-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_R_t
  *                           from which max value is extracted.
@@ -997,7 +961,7 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_mat_max_r(const ifx_Matrix_R_t* matrix);
 
 /**
- * @brief Computes the variance of a real valued matrix.
+ * @brief Computes the variance of a real-valued matrix.
  *
  * @param [in]     matrix    Pointer to a data memory defined by \ref ifx_Matrix_R_t
  *                           from which variance is calculated.
@@ -1277,7 +1241,7 @@ void ifx_mat_mul_cr(const ifx_Matrix_C_t* matrix_l,
  * Set all elements of the matrix to 0.
  *
  * @param [in]     matrix    Pointer to real matrix to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_mat_clear_r(ifx_Matrix_R_t* matrix);
@@ -1288,21 +1252,39 @@ void ifx_mat_clear_r(ifx_Matrix_R_t* matrix);
  * Set all elements of the matrix to 0.
  *
  * @param [in]     matrix    Pointer to complex matrix to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_mat_clear_c(ifx_Matrix_C_t* matrix);
 
 /**
-  * @}
-  */
- 
+ * @brief Create a copy of real matrix.
+ *
+ * @param [in]  input  Input matrix to be cloned.
+ * @retval  copy of matrix
+ */
+IFX_DLL_PUBLIC
+ifx_Matrix_R_t* ifx_mat_clone_r(const ifx_Matrix_R_t* input);
+
 /**
-  * @}
-  */ 
- 
+ * @brief Create a copy of complex matrix.
+ *
+ * @param [in]  input  Input matrix to be cloned.
+ * @retval  copy of matrix
+ */
+IFX_DLL_PUBLIC
+ifx_Matrix_C_t* ifx_mat_clone_c(const ifx_Matrix_C_t* input);
+
+/**
+ * @}
+ */
+
+/**
+ * @}
+ */
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_MATRIX_H */

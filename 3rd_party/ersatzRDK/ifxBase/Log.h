@@ -38,11 +38,6 @@
 #ifndef IFX_BASE_LOG_H
 #define IFX_BASE_LOG_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
@@ -50,11 +45,18 @@ extern "C"
 */
 
 #ifndef IFX_STDOUT
-#include <stdio.h>
+#include <stdio.h>  // NOLINT(modernize-deprecated-headers)
 #define IFX_STDOUT stderr
 #endif
 
-#include "ifxBase/Types.h"
+#include "Types.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -68,26 +70,26 @@ extern "C"
 #define IFX_LOG_DEBUG(...)
 #endif
 
-#if defined(IFX_LOG_SEVERITY_INFO) || \
-    defined(IFX_LOG_SEVERITY_DEBUG)
+#if defined(IFX_LOG_SEVERITY_INFO) \
+    || defined(IFX_LOG_SEVERITY_DEBUG)
 #define IFX_LOG_INFO(...) ifx_log(IFX_STDOUT, IFX_LOG_INFO, __VA_ARGS__)
 #else
 #define IFX_LOG_INFO(...)
 #endif
 
-#if defined(IFX_LOG_SEVERITY_INFO)    || \
-    defined(IFX_LOG_SEVERITY_WARNING) || \
-    defined(IFX_LOG_SEVERITY_DEBUG)
+#if defined(IFX_LOG_SEVERITY_INFO)       \
+    || defined(IFX_LOG_SEVERITY_WARNING) \
+    || defined(IFX_LOG_SEVERITY_DEBUG)
 #define IFX_LOG_WARNING(...) ifx_log(IFX_STDOUT, IFX_LOG_WARNING, __VA_ARGS__)
 #else
 #define IFX_LOG_WARNING(...)
 #endif
 
-#if defined(IFX_LOG_SEVERITY_INFO)    || \
-    defined(IFX_LOG_SEVERITY_WARNING) || \
-    defined(IFX_LOG_SEVERITY_ERROR)   || \
-    defined(IFX_LOG_SEVERITY_DEBUG)
-#define IFX_LOG_ERROR(...)   ifx_log(IFX_STDOUT, IFX_LOG_ERROR, __VA_ARGS__)
+#if defined(IFX_LOG_SEVERITY_INFO)       \
+    || defined(IFX_LOG_SEVERITY_WARNING) \
+    || defined(IFX_LOG_SEVERITY_ERROR)   \
+    || defined(IFX_LOG_SEVERITY_DEBUG)
+#define IFX_LOG_ERROR(...) ifx_log(IFX_STDOUT, IFX_LOG_ERROR, __VA_ARGS__)
 #else
 #define IFX_LOG_ERROR(...)
 #endif
@@ -116,27 +118,27 @@ typedef enum
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_log Log
-  * @brief API for logging
-  * @{
-  */
+ * @brief API for logging
+ * @{
+ */
 
 IFX_DLL_PUBLIC
 void ifx_log(FILE* f, ifx_Log_Severity_t s, const char* msg, ...);
 
 /**
-  * @}
-  */
- 
+ * @}
+ */
+
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_LOG_H */

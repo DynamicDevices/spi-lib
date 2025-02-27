@@ -27,13 +27,8 @@
 ** ===========================================================================
 */
 
-#ifndef IFX_RADAR_UTIL_H
-#define IFX_RADAR_UTIL_H
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
+#ifndef IFX_BASE_UUID_H
+#define IFX_BASE_UUID_H
 
 /*
 ==============================================================================
@@ -41,10 +36,14 @@ extern "C"
 ==============================================================================
 */
 
-#include <stdint.h>
-#include <stdbool.h>
+#include "Types.h"
 
-#include <ifxBase/Types.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /*
 ==============================================================================
    2. DEFINITIONS
@@ -90,9 +89,9 @@ bool ifx_uuid_from_string(const char* string, uint8_t uuid[16]);
 IFX_DLL_PUBLIC
 void ifx_uuid_to_string(const uint8_t uuid[16], char* string);
 
- 
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_UUID_H */

@@ -1,0 +1,5 @@
+ea1db156a7198683b634be87edb4f11a9d5154afe177fac67432ee8c6a550928 doxygen/doxygen-1.8.14.windows.x64.bin.zip
+92424677cdc845e765252e4da18605c5c720ddc2e6b464fdc264def476d5438a gcc/gcc-arm-none-eabi-10.3-2021.07-win32.zip renamedir
+9fba6df0b89be0dc0377f2e77ca272b3f8c38691fe237699de275ea0c2254242 cmake/cmake-3.21.1-windows-x86_64.zip
+9d0de706043de5b86410c29e01a2541fc90aecc6419f662562a5f6ac3a60d4b6 ninja/ninja-1.9.0-win.zip
+af5832a5532902442eaf1b2ca14828e4f93b6cc120db0c4cebdd1a9da1cde610 nanopb/nanopb-0.4.6-windows-x86.zip

@@ -38,19 +38,21 @@
 #ifndef IFX_BASE_VECTOR_H
 #define IFX_BASE_VECTOR_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include <stdbool.h>
-#include "ifxBase/Types.h"
+#include "Mda.h"
+#include "Types.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -59,31 +61,48 @@ extern "C"
 */
 
 // Access macros -------------------------------------------------------------
-#define IFX_VEC_STRIDE(v)       ((v)->stride)
-#define IFX_VEC_OFFSET(v, idx)  ((idx)*(size_t)IFX_VEC_STRIDE(v))
-#define IFX_VEC_LEN(v)          ((v)->len)
-#define IFX_VEC_DAT(v)          ((v)->d)
-#define IFX_VEC_AT(v, idx)      (IFX_VEC_DAT(v)[IFX_VEC_OFFSET(v, idx)])
+#define IFX_VEC_STRIDE(v)      (IFX_MDA_STRIDE(v)[0])
+#define IFX_VEC_OFFSET(v, idx) IFX_MDA_OFFSET(v, idx)
+#define IFX_VEC_LEN(v)         (IFX_MDA_SHAPE(v)[0])
+#define IFX_VEC_DAT(v)         IFX_MDA_DATA(v)
+
+/** @brief Access vector element
+ *
+ * The macro can be used to set and get elements of a vector, for example:
+ * @code
+ * foo = IFX_VEC_AT(cube, idx);
+ * IFX_VEC_AT(cube, idx) = bar;
+ * @endcode
+ *
+ * The macro works with both real (\ref ifx_Vector_R_t) and complex (\ref ifx_Vector_C_t) vectors.
+ */
+#define IFX_VEC_AT(v, idx) IFX_MDA_AT(v, idx)
 
 // Condition check macro adaptations for Vector module -----------------------
-#define IFX_VEC_BRK_DIM(v1, v2)             IFX_ERR_BRK_COND(IFX_VEC_LEN(v1) != IFX_VEC_LEN(v2), IFX_ERROR_DIMENSION_MISMATCH)
-#define IFX_VEC_BRV_DIM(v1, v2, a)          IFX_ERR_BRV_COND(IFX_VEC_LEN(v1) != IFX_VEC_LEN(v2), IFX_ERROR_DIMENSION_MISMATCH, a)
+#define IFX_VEC_BRK_DIM(v1, v2)    IFX_ERR_BRK_COND(IFX_VEC_LEN(v1) != IFX_VEC_LEN(v2), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_VEC_BRV_DIM(v1, v2, a) IFX_ERR_BRV_COND(IFX_VEC_LEN(v1) != IFX_VEC_LEN(v2), IFX_ERROR_DIMENSION_MISMATCH, a)
 
-#define IFX_VEC_BRK_MINSIZE(v, minsize)     IFX_ERR_BRK_COND(IFX_VEC_LEN(v) < (minsize), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_VEC_BRK_MINSIZE(v, minsize) IFX_ERR_BRK_COND(IFX_VEC_LEN(v) < (minsize), IFX_ERROR_DIMENSION_MISMATCH)
 
-#define IFX_VEC_BRK_DIM_GT(vsmall, v)       IFX_ERR_BRK_COND(vLen(vsmall) > vLen(v), IFX_ERROR_DIMENSION_MISMATCH)
+#define IFX_VEC_BRK_DIM_GT(vsmall, v) IFX_ERR_BRK_COND(vLen(vsmall) > vLen(v), IFX_ERROR_DIMENSION_MISMATCH)
 
-#define IFX_VEC_BRK_VEC_BOUNDS(v, idx)      IFX_ERR_BRK_COND(idx >= IFX_VEC_LEN(v), IFX_ERROR_ARGUMENT_OUT_OF_BOUNDS)
-#define IFX_VEC_BRF_VEC_BOUNDS(v, idx)      IFX_ERR_BRF_COND(idx >= IFX_VEC_LEN(v), IFX_ERROR_ARGUMENT_OUT_OF_BOUNDS)
+#define IFX_VEC_BRK_VEC_BOUNDS(v, idx) IFX_ERR_BRK_COND((idx) >= IFX_VEC_LEN(v), IFX_ERROR_ARGUMENT_OUT_OF_BOUNDS)
+#define IFX_VEC_BRF_VEC_BOUNDS(v, idx) IFX_ERR_BRF_COND((idx) >= IFX_VEC_LEN(v), IFX_ERROR_ARGUMENT_OUT_OF_BOUNDS)
 
-#define IFX_VEC_BRK_VALID(m)  do {               \
-        IFX_ERR_BRK_NULL(m);                     \
-        IFX_ERR_BRK_ARGUMENT(vDat(m) == NULL)    \
-    } while(0)
-#define IFX_VEC_BRV_VALID(m, r)  do {            \
-        IFX_ERR_BRV_NULL(m, r);                  \
-        IFX_ERR_BRV_ARGUMENT(vDat(m) == NULL, r) \
-    } while(0)
+#define IFX_VEC_BRK_VALID(m)                                                        \
+    do                                                                              \
+    {                                                                               \
+        IFX_ERR_BRK_NULL(m);                                                        \
+        IFX_ERR_BRK_COND(IFX_MDA_DIMENSIONS(m) != 1, IFX_ERROR_DIMENSION_MISMATCH); \
+        IFX_ERR_BRK_ARGUMENT(vDat(m) == NULL);                                      \
+    } while (0)
+#define IFX_VEC_BRV_VALID(m, r)                                                        \
+    do                                                                                 \
+    {                                                                                  \
+        IFX_ERR_BRV_NULL(m, r);                                                        \
+        IFX_ERR_BRV_COND(IFX_MDA_DIMENSIONS(m) != 1, IFX_ERROR_DIMENSION_MISMATCH, r); \
+        IFX_ERR_BRV_ARGUMENT(vDat(m) == NULL, r);                                      \
+    } while (0)
 
 /*
 ==============================================================================
@@ -92,48 +111,22 @@ extern "C"
 */
 
 /**
-* @brief Forward declaration structure to operate on Real Vector.
-*/
-typedef struct ifx_Vector_R_s ifx_Vector_R_t;
+ * @brief Forward declaration structure to operate on Real Vector.
+ */
+typedef ifx_Mda_R_t ifx_Vector_R_t;
 
 /**
  * @brief Forward declaration structure to operate on Complex Vector.
  */
-typedef struct ifx_Vector_C_s ifx_Vector_C_t;
-
-/**
- * @brief Defines the structure for a one-dimensional real data array.
- *        Use type ifx_Vector_R_t for this struct.
- *        Data length is fixed in this vector i.e. vector neither grows nor shrinks.
- */
-struct ifx_Vector_R_s
-{
-    ifx_Float_t*    d;           /**< Pointer to floating point memory containing data values */
-    uint32_t        len;         /**< Number of floating point elements in the array */
-    uint32_t        stride : 31; /**< Stride of vector (address difference for consecutive elements) */
-    uint8_t         owns_d : 1;  /**< Set to 1 if the vector owns its data and has to free it */
-};
-
-/**
- * @brief Defines the structure for one-dimensional complex data array.
- *        Use type ifx_Vector_C_t for this struct.
- *        Data length is fixed in this vector i.e. vector neither grows nor shrinks.
- */
-struct ifx_Vector_C_s
-{
-    ifx_Complex_t*  d;           /**< Pointer to floating point memory containing data values */
-    uint32_t        len;         /**< Number of floating point elements in the array */
-    uint32_t        stride : 31; /**< Stride of vector (address difference for consecutive elements) */
-    uint8_t         owns_d : 1;  /**< Set to 1 if the vector owns its data and has to free it */
-};
+typedef ifx_Mda_C_t ifx_Vector_C_t;
 
 /**
  * @brief Defines supported Vector sorting order options.
  */
 typedef enum
 {
-    IFX_SORT_ASCENDING = 0,  /**< Sorting in Ascending order */
-    IFX_SORT_DESCENDING      /**< Sorting in Descending order */
+    IFX_SORT_ASCENDING = 0, /**< Sorting in Ascending order */
+    IFX_SORT_DESCENDING     /**< Sorting in Descending order */
 } ifx_Vector_Sort_Order_t;
 
 /*
@@ -143,50 +136,35 @@ typedef enum
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_vector Vector
-  * @brief API for operations on Vector data structures
-  *
-  * Supports mathematical and other operations such as creation and destruction of
-  * vectors, or printing vector samples onto a file.
-  *
-  * @{
-  */
-
-/**
- * @brief Initializes a real vector \ref ifx_Vector_R_t with a data element of
- *        specified length, to prevent memory allocation on the heap.
+ * @brief API for operations on Vector data structures
  *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
- * @param [in]     d         Data pointer to assign the vector
- * @param [in]     length    Number of elements
+ * Supports mathematical and other operations such as creation and destruction of
+ * vectors, or printing vector samples onto a file.
  *
+ * @{
  */
-IFX_DLL_PUBLIC
-void ifx_vec_init_r(ifx_Vector_R_t* vector,
-                    ifx_Float_t* d,
-                    uint32_t length);
 
 /**
- * @brief Initializes a complex vector \ref ifx_Vector_C_t with a data element of
- *        specified length, to prevent memory allocation on the heap.
+ * @brief Assigns raw data to the ifx_Vector_R_t structure.
+ * Example usage:
  *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
- * @param [in]     d         Data pointer to assign the vector
- * @param [in]     length    Number of elements
+ *   Given \ref ifx_Vector_R_t out_vector, dimension of the vector length,
+ *   stride between consecutive elements in data array
+ *   and real data in array arr_data of size length, one can assign:
+ * @code
+ *     ifx_vec_rawview_r(&out_vector, arr_data, length, stride);
+ * @endcode
+ *   e.g. for vector of length 3 one can assign:
+ * @code
+ *     ifx_Float_t arr_data[3] = {1, 2, 3};
+ *     ifx_vec_rawview_r(&out_vector, arr_data, 3, 1);
+ * @endcode
  *
- */
-IFX_DLL_PUBLIC
-void ifx_vec_init_c(ifx_Vector_C_t* vector,
-                    ifx_Complex_t* d,
-                    uint32_t length);
-
-/**
- * @brief ...
- *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
+ * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
  * @param [in]     d         Data pointer to assign the vector
  * @param [in]     length    Number of elements
  * @param [in]     stride    Address difference for consecutive elements
@@ -199,9 +177,21 @@ void ifx_vec_rawview_r(ifx_Vector_R_t* vector,
                        uint32_t stride);
 
 /**
- * @brief ...
+ * @brief Assigns raw data to the ifx_Vector_C_t structure.
+ * Example usage:
  *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
+ *   Given \ref ifx_Vector_C_t out_vector, dimension of the vector length
+ *   and a complex data in array arr_data of size length, one can assign:
+ * @code
+ *     ifx_vec_rawview_c(&out_vector, arr_data, length, stride);
+ * @endcode
+ *   e.g. for vector of length 3 one can assign:
+ * @code
+ *     ifx_Complex_t arr_data[3] = {{1,1}, {2,2}, {3,3}};
+ *     ifx_vec_rawview_c(&out_vector, arr_data, 3, 1);
+ * @endcode
+ *
+ * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
  * @param [in]     d         Data pointer to assign the vector
  * @param [in]     length    Number of elements
  * @param [in]     stride    Address difference for consecutive elements
@@ -214,13 +204,32 @@ void ifx_vec_rawview_c(ifx_Vector_C_t* vector,
                        uint32_t stride);
 
 /**
- * @brief ...
+ * @brief Assigns real data from source vector to the destination vector.
+ * Example usage:
  *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
+ *   Given \ref ifx_Vector_R_t dest_vector and \ref ifx_Vector_R_t source_vector,
+ *   dimension of the dest_vector length and
+ *   offset for source_matrix and spacing/stride between elements one can assign:
+ * @code
+ *     ifx_vec_view_r(&dest_vector, &source_vector, offset, length, spacing);
+ * @endcode
+ *   e.g. for taking a view of the second half of the vector:
+ * @code
+ *     ifx_Float_t arr_data[8] = {1, 2, 3, 4, 5, 6, 7, 8};
+ *     ifx_vec_rawview_r(&source_vector, arr_data, 8, 1);
+ *
+ *     ifx_vec_view_r(&dest_vector, &source_vector, 4, 4, 1);
+ * @endcode
+ *     will give a vector with values:
+ * @code
+ *     [5, 6, 7, 8]
+ * @endcode
+ *
+ * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
  * @param [in]     source    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
- * @param [in]     offset    ...
+ * @param [in]     offset    Offset of elements to take from source
  * @param [in]     length    Number of elements
- * @param [in]     spacing   ...
+ * @param [in]     spacing   Stride between consecutive elements in the output vector
  *
  */
 IFX_DLL_PUBLIC
@@ -231,13 +240,32 @@ void ifx_vec_view_r(ifx_Vector_R_t* vector,
                     uint32_t spacing);
 
 /**
- * @brief ...
+ * @brief Assigns complex data from source vector to the destination vector.
+ * Example usage:
  *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
+ *   Given \ref ifx_Vector_C_t dest_vector and \ref ifx_Vector_C_t source_vector,
+ *   dimension of the dest_vector length and
+ *   offset for source_matrix and spacing/stride between elements one can assign:
+ * @code
+ *     ifx_vec_view_c(&dest_vector, &source_vector, offset, length, spacing);
+ * @endcode
+ *   e.g. for taking a view of the second half of the vector:
+ * @code
+ *     ifx_Complex_t arr_data[4] = {{1, 1}, {2, 2}, {3, 3}, {4, 4}};
+ *     ifx_vec_rawview_c(&source_vector, arr_data, 4, 1);
+ *
+ *     ifx_vec_view_c(&dest_vector, &source_vector, 2, 2, 1);
+ * @endcode
+ *     will give a vector with values:
+ * @code
+ *     [{3, 3}, {4, 4}]
+ * @endcode
+ *
+ * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
  * @param [in]     source    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
- * @param [in]     offset    ...
+ * @param [in]     offset    Offset of elements to take from source
  * @param [in]     length    Number of elements
- * @param [in]     spacing   ...
+ * @param [in]     spacing   Stride between consecutive elements in the output vector
  *
  */
 IFX_DLL_PUBLIC
@@ -292,24 +320,6 @@ ifx_Vector_R_t* ifx_vec_clone_r(const ifx_Vector_R_t* vector);
  */
 IFX_DLL_PUBLIC
 ifx_Vector_C_t* ifx_vec_clone_c(const ifx_Vector_C_t* vector);
-
-/**
- * @brief De-initializes a real vector \ref ifx_Vector_R_t
- *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_vec_deinit_r(ifx_Vector_R_t* vector);
-
-/**
- * @brief De-initializes a complex vector array \ref ifx_Vector_R_t
- *
- * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
- *
- */
-IFX_DLL_PUBLIC
-void ifx_vec_deinit_c(ifx_Vector_C_t* vector);
 
 /**
  * @brief Frees the memory allocated for a real vector for a specified
@@ -420,7 +430,27 @@ void ifx_vec_copyshift_c(const ifx_Vector_C_t* input,
                          ifx_Vector_C_t* output);
 
 /**
- * @brief ...
+ * @brief Performs rotation on a real vector elements by factor
+ * and elements shifted out are fed back to the vector like a circular ring.
+ * If shift value is 0, the vector data is not touched.
+ *
+ * Example usage:
+ *
+ *   Given \ref ifx_Vector_R_t vector and demanded shift one can assign:
+ * @code
+ *     ifx_vec_shift_r(&vector, shift);
+ * @endcode
+ *   e.g. for shifting a vector by 2:
+ * @code
+ *     ifx_Float_t arr_data[6] = {1, 2, 3, 4, 5, 6};
+ *     ifx_vec_rawview_r(&source_vector, arr_data, 6, 1);
+ *
+ *     ifx_vec_shift_r(&vector, 2);
+ * @endcode
+ *     the vector will have values:
+ * @code
+ *     [3, 4, 5, 6, 1, 2]
+ * @endcode
  *
  * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
  * @param [in]     shift     Number of vector elements to be shifted
@@ -431,7 +461,27 @@ void ifx_vec_shift_r(ifx_Vector_R_t* vector,
                      uint32_t shift);
 
 /**
- * @brief ...
+ * @brief Performs rotation on a complex vector elements by factor
+ * and elements shifted out are fed back to the vector like a circular ring.
+ * If shift value is 0, the vector data is not touched.
+ *
+ * Example usage:
+ *
+ *   Given \ref ifx_Vector_C_t vector and demanded shift one can assign:
+ * @code
+ *     ifx_vec_shift_c(&vector, shift);
+ * @endcode
+ *   e.g. for shifting a vector by 1:
+ * @code
+ *     ifx_Complex_t arr_data[4] = {1,1}, {2,2}, {3,3}, {4,4};
+ *     ifx_vec_rawview_c(&source_vector, arr_data, 4, 1);
+ *
+ *     ifx_vec_shift_c(&vector, 1);
+ * @endcode
+ *     the vector will have values:
+ * @code
+ *     [{2,2}, {3,3}, {4,4}, {1,1}]
+ * @endcode
  *
  * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_C_t
  * @param [in]     shift     Number of vector elements to be shifted
@@ -445,7 +495,7 @@ void ifx_vec_shift_c(ifx_Vector_C_t* vector,
  * @brief Sets a real user's defined value for all real vector elements.
  *
  * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t
- * @param [in]     value     User real defined value defined by \ref ifx_Float_t
+ * @param [in]     value     User real defined value defined by \see ifx_Float_t
  *
  */
 IFX_DLL_PUBLIC
@@ -473,8 +523,8 @@ void ifx_vec_setall_c(ifx_Vector_C_t* vector,
  */
 IFX_DLL_PUBLIC
 void ifx_vec_complex_c(const ifx_Vector_R_t* input_real,
-    const ifx_Vector_R_t* input_imag,
-    ifx_Vector_C_t* output);
+                       const ifx_Vector_R_t* input_imag,
+                       ifx_Vector_C_t* output);
 
 /**
  * @brief Set all values in given range to same given value
@@ -487,9 +537,9 @@ void ifx_vec_complex_c(const ifx_Vector_R_t* input_real,
  */
 IFX_DLL_PUBLIC
 void ifx_vec_set_range_r(ifx_Vector_R_t* vector,
-                      uint32_t offset,
-                      uint32_t length,
-                      ifx_Float_t value);
+                         uint32_t offset,
+                         uint32_t length,
+                         ifx_Float_t value);
 
 /**
  * @brief Set all values in given range to same given value
@@ -502,16 +552,16 @@ void ifx_vec_set_range_r(ifx_Vector_R_t* vector,
  */
 IFX_DLL_PUBLIC
 void ifx_vec_set_range_c(ifx_Vector_C_t* vector,
-                      uint32_t offset,
-                      uint32_t length,
-                      ifx_Complex_t value);
+                         uint32_t offset,
+                         uint32_t length,
+                         ifx_Complex_t value);
 
 /**
  * @brief Sets a real user defined value at a given index in a real vector.
  *
  * @param [in,out] vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t.
  * @param [in]     idx       Location where the value is to be set.
- * @param [in]     value     User real defined value defined by \ref ifx_Float_t.
+ * @param [in]     value     User real defined value defined by \see ifx_Float_t.
  *
  */
 IFX_DLL_PUBLIC
@@ -588,6 +638,17 @@ IFX_DLL_PUBLIC
 ifx_Float_t ifx_vec_maxabs_r(const ifx_Vector_R_t* vector);
 
 /**
+ * @brief Returns the smallest absolute value of a given real vector.
+ *
+ * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t.
+ *
+ * @return Minimum absolute value of the passed input vector.
+ *
+ */
+IFX_DLL_PUBLIC
+ifx_Float_t ifx_vec_minabs_r(const ifx_Vector_R_t* vector);
+
+/**
  * @brief Returns the index of maximum value of a given vector.
  *
  * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t.
@@ -599,13 +660,13 @@ IFX_DLL_PUBLIC
 uint32_t ifx_vec_max_idx_r(const ifx_Vector_R_t* vector);
 
 /**
-* @brief Returns the index of minimum value of a given vector.
-*
-* @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t.
-*
-* @return Index of minimum value of the passed input vector.
-*
-*/
+ * @brief Returns the index of minimum value of a given vector.
+ *
+ * @param [in]     vector    Pointer to the memory containing array defined by \ref ifx_Vector_R_t.
+ *
+ * @return Index of minimum value of the passed input vector.
+ *
+ */
 IFX_DLL_PUBLIC
 uint32_t ifx_vec_min_idx_r(const ifx_Vector_R_t* vector);
 
@@ -772,7 +833,7 @@ void ifx_vec_abs_c(const ifx_Vector_C_t* input,
  */
 IFX_DLL_PUBLIC
 void ifx_vec_flip_r(const ifx_Vector_R_t* input,
-    ifx_Vector_R_t* output);
+                    ifx_Vector_R_t* output);
 
 /**
  * @brief Removes a scalar value from each sample of a real vector.
@@ -878,19 +939,6 @@ ifx_Float_t ifx_vec_distance_r(const ifx_Vector_R_t* v1,
                                const ifx_Vector_R_t* v2);
 
 /**
- * @brief Sorts real vector indices.
- *
- * @param [in]     input               Pointer to data memory defined by \ref ifx_Vector_R_t.
- * @param [in]     order               Sorting order defined by \ref ifx_Vector_Sort_Order_t.
- * @param [out]    sorted_idxs         Pointer to sorted indices array.
- *
- */
-IFX_DLL_PUBLIC
-void ifx_vec_isort_r(const ifx_Vector_R_t* input,
-                     ifx_Vector_Sort_Order_t order,
-                     uint32_t* sorted_idxs);
-
-/**
  * @brief Applies multiply accumulate (MAC) operation on real vectors.
  *
  * Math operation implemented by this method: result = a + b * scale
@@ -905,7 +953,7 @@ void ifx_vec_isort_r(const ifx_Vector_R_t* input,
 IFX_DLL_PUBLIC
 void ifx_vec_mac_r(const ifx_Vector_R_t* v1,
                    const ifx_Vector_R_t* v2,
-                   const ifx_Float_t scale,
+                   ifx_Float_t scale,
                    ifx_Vector_R_t* result);
 
 /**
@@ -924,7 +972,7 @@ void ifx_vec_mac_r(const ifx_Vector_R_t* v1,
 IFX_DLL_PUBLIC
 void ifx_vec_mac_c(const ifx_Vector_C_t* v1,
                    const ifx_Vector_C_t* v2,
-                   const ifx_Complex_t scale,
+                   ifx_Complex_t scale,
                    ifx_Vector_C_t* result);
 
 /**
@@ -1000,7 +1048,7 @@ uint32_t ifx_vec_local_maxima(const ifx_Vector_R_t* vector,
  * @brief Clears all elements of real vector defined by \ref ifx_Vector_R_t.
  *
  * @param [in]     vector    Pointer to real vector to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_vec_clear_r(ifx_Vector_R_t* vector);
@@ -1009,7 +1057,7 @@ void ifx_vec_clear_r(ifx_Vector_R_t* vector);
  * @brief Clears all elements of complex vector defined by \ref ifx_Vector_C_t.
  *
  * @param [in]     vector    Pointer to complex vector to be cleared.
- * 
+ *
  */
 IFX_DLL_PUBLIC
 void ifx_vec_clear_c(ifx_Vector_C_t* vector);
@@ -1029,66 +1077,181 @@ void ifx_vec_clear_c(ifx_Vector_C_t* vector);
  *
  */
 IFX_DLL_PUBLIC
-void ifx_vec_linspace_r(const ifx_Float_t start,
-    const ifx_Float_t end,
-    ifx_Vector_R_t* output);
+void ifx_vec_linspace_r(ifx_Float_t start,
+                        ifx_Float_t end,
+                        ifx_Vector_R_t* output);
 
 
 /**
  * @brief Computes median
- * 
- * Median is defined as value lying in midpoint of values that where previously sorted. 
+ *
+ * Median is defined as value lying in midpoint of values that where previously sorted.
  * If the midpoint is betwean of two values the mean of them is taken as result.
- * 
- * This algorithm is complexity is nlog(n) efficient for smaller tables rather 
- * hundreds not thousends, it is also not efficient by that could cause worst cases n^2 complexity. 
- * Algorithm was not randomise to avoid cornel of specifically sorted data not to add additional 
+ *
+ * This algorithm is complexity is nlog(n) efficient for smaller tables rather
+ * hundreds not thousends, it is also not efficient by that could cause worst cases n^2 complexity.
+ * Algorithm was not randomise to avoid cornel of specifically sorted data not to add additional
  * overhead for usage in filters.
- * 
+ *
  * Used algorithm is doing finding of median in place without creating any additional arrays.
- * 
+ *
  * @param [in]     input     input data
  * @param [in]     offset    start position where fining median
- * @param [in]     length    number of elements from offset that will be taken into 
+ * @param [in]     length    number of elements from offset that will be taken into
  *                           consideration during median fininding
  * @retval         NaN       if 0 elements on input or error
  * @retval         median    otherwise
  */
 IFX_DLL_PUBLIC
-ifx_Float_t ifx_vect_median_range_r(const ifx_Vector_R_t* input, uint32_t offset, uint32_t length);
+ifx_Float_t ifx_vec_median_range_r(const ifx_Vector_R_t* input, uint32_t offset, uint32_t length);
 
 /**
  * @brief Computes median
- * 
- * This function is generalization of /ref ::ifx_vect_median_range_r
+ *
+ * This function is generalization of /ref ::ifx_vec_median_range_r
  * @param [in]     input     input data
  * @retval         NaN       if 0 elements on input or error
  * @retval         median    otherwise
  */
 IFX_DLL_PUBLIC
-ifx_Float_t ifx_vect_median_r(const ifx_Vector_R_t* input);
+ifx_Float_t ifx_vec_median_r(const ifx_Vector_R_t* input);
 
 /**
-* @brief Checks if given vector is a zero vector (null vector) with only zeros.
-*
-* @param [in]     vector   Vector to check
-*
-* @return True if vector is zero vector otherwise false
-*
-*/
+ * @brief Compute dot product between two real vectors
+ *
+ * Compute the dot product between vector v1 and vector v2. Both vectors must
+ * have the same length. The dot product is defined as
+ * \f$x \cdot y = \sum_j x_j y_j\f$.
+ *
+ * @param [in]     v1     first vector
+ * @param [in]     v2     second vector
+ * @retval         dot product beween v1 and v2
+ */
 IFX_DLL_PUBLIC
-bool ifx_vec_is_zero_r(ifx_Vector_R_t* vector);
+ifx_Float_t ifx_vec_dot_r(const ifx_Vector_R_t* v1, const ifx_Vector_R_t* v2);
 
 /**
-  * @}
-  */
- 
+ * @brief Compute dot product between two real vectors
+ *
+ * This is a more general version of \ref ifx_vec_dot_r. The dot product is
+ * computed as \f$\sum_{j=0}^{\mathrm{len}-1} x_{\alpha+j} y_{\beta+j}\f$, where
+ * \f$x\f$ corresponds to v1, \f$y\f$ corresponds to v2, and \f$\alpha,\beta\f$
+ * correspond to offset_v1 and offset_v2, respectively.
+ *
+ * @param [in]     v1           first vector
+ * @param [in]     v2           second vector
+ * @param [in]     offset_v1    offset of v1
+ * @param [in]     offset_v2    offset of v2
+ * @param [in]     len          number of elements
+ * @retval         dot product beween v1 and v2
+ */
+IFX_DLL_PUBLIC
+ifx_Float_t ifx_vec_dot2_r(const ifx_Vector_R_t* v1, const ifx_Vector_R_t* v2, uint32_t offset_v1, uint32_t offset_v2, uint32_t len);
+
+
 /**
-  * @}
-  */ 
- 
+ * @brief Operates on real value vectors, to perform log base 10 from standard math.
+ * If any of the input real values are negative, the output would be a NaN as per the C99 standard.
+ *
+ * @param [in]     input     Vector of real values as an input
+ * @param [out]    output    Vector of real values as output, could be same as input for in-place operation
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_log10_r(const ifx_Vector_R_t* input,
+                     ifx_Vector_R_t* output);
+
+/**
+ * @brief Operates on complex value vectors, to perform log base 10 of complex numbers from standard math.
+ *
+ * @param [in]     input     Vector of complex values as an input
+ * @param [out]    output    Vector of complex values as output, could be same as input for in-place operation
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_log10_c(const ifx_Vector_C_t* input,
+                     ifx_Vector_C_t* output);
+
+/**
+ * @brief Operates on real vector arrays, to convert from linear to dB scale.
+ *
+ * @param [in]     input     Vector of real values as an input
+ * @param [in]     scale     For voltage this should be 20 i.e. 20xlog10() and for power 10 i.e. 10xlog10()
+ *                           However, this is a generic math function, so scale can be any desired non zero float value
+ * @param [out]    output    Vector of real values as output, could be same as input for in-place operation
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_linear_to_dB(const ifx_Vector_R_t* input,
+                          ifx_Float_t scale,
+                          ifx_Vector_R_t* output);
+
+/**
+ * @brief Operates on real vector arrays, to convert from dB to linear scale.
+ *
+ * @param [in]     input     Vector of real values as an input
+ * @param [in]     scale     For voltage this should be 20 i.e. 10^(A/20) and for power 10 i.e. 10^(A/10)
+ * @param [out]    output    Vector of real values as output, could be same as input for in-place operation
+ *
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_dB_to_linear(const ifx_Vector_R_t* input,
+                          ifx_Float_t scale,
+                          ifx_Vector_R_t* output);
+
+/**
+ * @brief Operates on real vector arrays, to calculate difference deviation in linear scale.
+ *
+ * Difference deviation is the standard deviation calculated on the difference vector (v2 - v1).
+ * Output is a linear value, that can be used to observe the deviation in two vectors.
+ *
+ * @param [in]     v1     first vector of real values to be subtracted
+ * @param [in]     v2     second vector of real values from which the other vectors is subtracted
+ *
+ * @retval         Difference deviation calculated from difference of two real vectors.
+ */
+IFX_DLL_PUBLIC
+ifx_Float_t ifx_vec_difference_deviation_r(const ifx_Vector_R_t* v1, const ifx_Vector_R_t* v2);
+
+/**
+ * @brief Computes squared norm of complex vector.
+ *
+ * For each element in the vector input compute the square of the absolute
+ * value and save it in output: \f$\mathrm{output}_j = |\mathrm{input}_j|^2\f$
+ *
+ * @param [in]     input     Complex input vector.
+ * @param [out]    output    Square of norm of vector input.
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_squared_norm_c(const ifx_Vector_C_t* input, ifx_Vector_R_t* output);
+
+/**
+ * @brief Convert a vector containing squared absolute of spectrum to dB
+ *
+ * Given the squared norm of the spectrum, convert it to dB.
+ *
+ * The function is equivalent to:
+ *   1. Taking the square root of all elements of vec.
+ *   2. Clipping all values smaller than threshold to CLIPPING_VALUE.
+ *   3. Converting all value to dB using scale.
+ *
+ * @param [in,out]  vec         squared norm of spectrum
+ * @param [in]      scale       scale factor
+ * @param [in]      threshold   threshold for clipping
+ */
+IFX_DLL_PUBLIC
+void ifx_vec_spectrum2_to_db(ifx_Vector_R_t* vec, ifx_Float_t scale, ifx_Float_t threshold);
+
+/**
+ * @}
+ */
+
+/**
+ * @}
+ */
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_VECTOR_H */

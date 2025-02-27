@@ -35,12 +35,12 @@
 
 #include <float.h>
 
-#include "ifxBase/Math.h"
-#include "ifxBase/Complex.h"
-#include "ifxBase/Defines.h"
-#include "ifxBase/Vector.h"
-#include "ifxBase/Error.h"
-#include "ifxBase/internal/Macros.h"
+#include "Complex.h"
+#include "Defines.h"
+#include "Error.h"
+#include "internal/Macros.h"
+#include "Math.h"
+#include "Vector.h"
 
 /*
 ==============================================================================
@@ -81,7 +81,7 @@
 ifx_Float_t ifx_math_find_max(const ifx_Vector_R_t* input,
                               uint32_t* max_idx)
 {
-    IFX_ERR_BRV_NULL(input, -FLT_MAX);
+    IFX_VEC_BRV_VALID(input, -FLT_MAX);
     IFX_ERR_BRV_ARGUMENT(vLen(input) < 1, -FLT_MAX);
 
     uint32_t idx = 0;
@@ -106,33 +106,16 @@ ifx_Float_t ifx_math_find_max(const ifx_Vector_R_t* input,
 
 //----------------------------------------------------------------------------
 
-ifx_Float_t ifx_math_calc_l1norm(const ifx_Vector_R_t* input)
-{
-    IFX_ERR_BRV_NULL(input, -FLT_MAX)
-    IFX_ERR_BRV_ARGUMENT(vLen(input) < 1, -FLT_MAX)
-
-    ifx_Float_t fsum = 0;
-
-    for (uint32_t i = 0; i < vLen(input); ++i)
-    {
-        fsum += FABS(vAt(input, i));
-    }
-
-    return fsum;
-}
-
-//----------------------------------------------------------------------------
-
 void ifx_math_vec_clip_lt_threshold_r(const ifx_Vector_R_t* input,
-                                      const ifx_Float_t threshold,
-                                      const ifx_Float_t clip_value,
+                                      ifx_Float_t threshold,
+                                      ifx_Float_t clip_value,
                                       ifx_Vector_R_t* output)
 {
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-    IFX_ERR_BRK_ARGUMENT(threshold < 0)
+    IFX_VEC_BRK_VALID(input);
+    IFX_VEC_BRK_VALID(output);
+    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1);
+    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1);
+    IFX_ERR_BRK_ARGUMENT(threshold < 0);
 
     uint32_t N = vLen(output);
 
@@ -157,15 +140,15 @@ void ifx_math_vec_clip_lt_threshold_r(const ifx_Vector_R_t* input,
 //----------------------------------------------------------------------------
 
 void ifx_math_vec_clip_gt_threshold_r(const ifx_Vector_R_t* input,
-                                      const ifx_Float_t threshold,
-                                      const ifx_Float_t clip_value,
+                                      ifx_Float_t threshold,
+                                      ifx_Float_t clip_value,
                                       ifx_Vector_R_t* output)
 {
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-    IFX_ERR_BRK_ARGUMENT(threshold < 0)
+    IFX_VEC_BRK_VALID(input);
+    IFX_VEC_BRK_VALID(output);
+    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1);
+    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1);
+    IFX_ERR_BRK_ARGUMENT(threshold < 0);
 
     uint32_t N = vLen(output);
 
@@ -189,129 +172,22 @@ void ifx_math_vec_clip_gt_threshold_r(const ifx_Vector_R_t* input,
 
 //----------------------------------------------------------------------------
 
-void ifx_math_vec_log10_r(const ifx_Vector_R_t* input,
-                          ifx_Vector_R_t* output)
-{
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-
-    uint32_t N = vLen(output);
-
-    if (vLen(input) < N)
-    {
-        N = vLen(input);
-    }
-
-    for (uint32_t i = 0; i < N; i++)
-    {
-        vAt(output, i) = LOG10(vAt(input, i));
-    }
-}
-
-//----------------------------------------------------------------------------
-
-void ifx_math_vec_log10_c(const ifx_Vector_C_t* input,
-                          ifx_Vector_C_t* output)
-{
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-
-    uint32_t N = vLen(output);
-
-    if (vLen(input) < N)
-    {
-        N = vLen(input);
-    }
-
-    for (uint32_t i = 0; i < N; ++i)
-    {
-        vAt(output, i) = ifx_complex_log10(vAt(input, i));
-    }
-}
-
-//----------------------------------------------------------------------------
-
-ifx_Float_t ifx_math_linear_to_db(const ifx_Float_t input,
-                                  const ifx_Float_t scale)
+ifx_Float_t ifx_math_linear_to_db(ifx_Float_t input,
+                                  ifx_Float_t scale)
 {
     IFX_ERR_BRV_ARGUMENT(scale == 0, -FLT_MAX)
 
-    return scale * LOG10(input);     // always operate on real values
+    return scale * LOG10(input);  // always operate on real values
 }
 
 //----------------------------------------------------------------------------
 
-void ifx_math_vec_linear_to_db(const ifx_Vector_R_t* input,
-                               const ifx_Float_t scale,
-                               ifx_Vector_R_t* output)
-{
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-    IFX_ERR_BRK_ARGUMENT(scale == 0)
-
-    ifx_math_vec_log10_r(input, output);
-
-    ifx_vec_scale_r(output, scale, output);
-}
-
-//----------------------------------------------------------------------------
-
-ifx_Float_t ifx_math_db_to_linear(const ifx_Float_t input,
-                                  const ifx_Float_t scale)
+ifx_Float_t ifx_math_db_to_linear(ifx_Float_t input,
+                                  ifx_Float_t scale)
 {
     IFX_ERR_BRV_ARGUMENT(scale == 0, -FLT_MAX)
 
-    return POW(10.0, input / scale); // always operate on real values
-}
-
-//----------------------------------------------------------------------------
-
-void ifx_math_vec_db_to_linear(const ifx_Vector_R_t* input,
-                               const ifx_Float_t scale,
-                               ifx_Vector_R_t* output)
-{
-    IFX_ERR_BRK_NULL(input)
-    IFX_ERR_BRK_NULL(output)
-    IFX_ERR_BRK_ARGUMENT(vLen(input) < 1)
-    IFX_ERR_BRK_ARGUMENT(vLen(output) < 1)
-    IFX_ERR_BRK_ARGUMENT(scale == 0)
-
-    ifx_vec_scale_r(output, 1 / scale, output);
-
-    uint32_t N = vLen(output);
-
-    if (vLen(input) < N)
-    {
-        N = vLen(input);
-    }
-
-    for (uint32_t i = 0; i < N; ++i)
-    {
-        vAt(output, i) = POW(10.0, vAt(input, i)); // always operate on real values
-    }
-}
-
-//----------------------------------------------------------------------------
-
-int ifx_math_isclose_r(ifx_Float_t a, ifx_Float_t b, ifx_Float_t reltol, ifx_Float_t abstol)
-{
-    return ifx_math_abs_r(a-b) <= MAX(reltol * MAX(ifx_math_abs_r(a), ifx_math_abs_r(b)), abstol);
-}
-
-int ifx_math_isclose_c(ifx_Complex_t a, ifx_Complex_t b, ifx_Float_t reltol, ifx_Float_t abstol)
-{
-    return ifx_complex_abs(ifx_complex_sub(a,b)) <= MAX(reltol * MAX(ifx_complex_abs(a), ifx_complex_abs(b)), abstol);
-}
-
-ifx_Float_t ifx_math_abs_r(ifx_Float_t input)
-{
-    return FABS(input);
+    return POW(10.0, input / scale);  // always operate on real values
 }
 
 //----------------------------------------------------------------------------

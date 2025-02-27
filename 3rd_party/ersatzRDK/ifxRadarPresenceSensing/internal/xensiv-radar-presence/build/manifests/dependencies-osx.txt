@@ -1,0 +1,6 @@
+c4ffc0516ec417546471126437df12c80c37ca09a2514289c13d8e2c81fb615f doxygen/doxygen-1.8.14-osx.tar.bz2
+cfbc9a2c41464540f493e4ae711c9d4880c19e173b48cc621a50152fc917b45a aclang/aclang-libs-0.3.zip
+c88cafc51c6efdefaa5b3600407ca98ab92042973bb0da4fece601f7f772a5ff gcc/gcc-arm-none-eabi-10.3-2021.07-mac.tar.bz2 renamedir
+20dbede1d80c1ac80be2966172f8838c3d899951ac4467372f806b386d42ad3c cmake/cmake-3.21.1-macos10.10-universal.tar.gz
+e65c94ccd72d6bf8adbc95de6ba8e30e7c1b8607c2c9cbfb79ba34ff90276b5b ninja/ninja-1.9.0-mac.zip
+d3de99a794aaf2ef0d51887f36b3d2dd65c5535c48d8b8dcd0576ed93de7b988 nanopb/nanopb-0.4.6-macosx-x86.tar.gz

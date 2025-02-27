@@ -27,11 +27,6 @@
 ** ===========================================================================
 */
 
-#if _MSC_VER
-/* suppress warning about unsafe function strcpy */
-#pragma warning(disable:4996)
-#endif
-
 /*
 ==============================================================================
    1. INCLUDE FILES
@@ -39,14 +34,11 @@
 */
 
 #include <ctype.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "ifxBase/Mem.h"
-#include "ifxBase/internal/Util.h"
+#include "internal/Util.h"
+#include "Mem.h"
 
 /*
 ==============================================================================
@@ -87,57 +79,13 @@
 /* internal function */
 char* ifx_util_strdup(const char* orig)
 {
-    char* copy = ifx_mem_calloc(strlen(orig) + 1, sizeof(char));
+
+    size_t len = strlen(orig) + 1;
+    char* copy = ifx_mem_calloc(len, sizeof(char));
     if (copy)
-        strcpy(copy, orig);
+        memcpy(copy, orig, len);
 
     return copy;
-}
-
-/* internal function */
-bool ifx_util_overflow_mul_size_t(size_t a, size_t b, size_t* result)
-{
-    /* if a or b is 0, the result is result = 0 */
-    if(a == 0 || b == 0)
-    {
-        *result = 0;
-        return false;
-    }
-
-    const size_t ab = a*b;
-    
-    if(ab/a == b)
-    {
-        /* no overflow */
-        *result = ab;
-        return false;
-    }
-
-    /* overflow */
-    return true;
-}
-
-/* internal function */
-bool ifx_util_overflow_mul3_size_t(size_t a, size_t b, size_t c, size_t* result)
-{
-    size_t ab;
-    if(ifx_util_overflow_mul_size_t(a, b, &ab))
-        return true;
-    
-    return ifx_util_overflow_mul_size_t(ab, c, result);
-}
-
-/*internal function*/
-bool ifx_util_overflow_add_size_t(size_t a, size_t b, size_t* result)
-{
-    if(a > 0 && b > (SIZE_MAX - a))
-    {
-        /* overflow */
-        return true;
-    }
-    /* no overflow */
-    *result = a+b;
-    return false;
 }
 
 uint32_t ifx_util_popcount(uint32_t mask)

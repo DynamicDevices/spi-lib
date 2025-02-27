@@ -30,27 +30,25 @@
 #ifndef IFX_BASE_LIST_H
 #define IFX_BASE_LIST_H
 
-#ifdef __cplusplus
-#include <stddef.h> // for size_t
+#include "Types.h"
 
+
+#ifdef __cplusplus
 extern "C"
 {
-#endif // __cplusplus
+#endif
 
-#include "ifxBase/Types.h"
-
-#include <stdbool.h>
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_list List
-  * @brief API for list handling
-  * @{
-  */
+ * @brief API for list handling
+ * @{
+ */
 
-  
+
 typedef struct ifxList ifx_List_t;
 
 /**
@@ -62,10 +60,10 @@ typedef struct ifxList ifx_List_t;
  * element. If destructor is a valid pointer, items of the list will
  * be freed when the corresponding pointer is removed. If destructor
  * is NULL, the memory for the entries will not be freed.
- * 
+ *
  * @param   [in]    destructor  destructor
- * @return list if successul
- * @return NULL if an error occured
+ * @return list if successful
+ * @return NULL if an error occurred
  */
 IFX_DLL_PUBLIC
 ifx_List_t* ifx_list_create(void destructor(void*));
@@ -97,13 +95,13 @@ size_t ifx_list_size(const ifx_List_t* list);
  *
  * Append an element to the back of the list.
  *
- * If an allocation error occures, the function returns false and the error
+ * If an allocation error occurs, the function returns false and the error
  * IFX_ERROR_MEMORY_ALLOCATION_FAILED is set.
  *
  * @param [in]  list    pointer to list
  * @param [in]  elem    element
  * @retval  true        if successful
- * @retval  false       if an allocation error occured
+ * @retval  false       if an allocation error occurred
  */
 IFX_DLL_PUBLIC
 bool ifx_list_push_back(ifx_List_t* list, void* elem);
@@ -125,16 +123,16 @@ IFX_DLL_PUBLIC
 void* ifx_list_get(const ifx_List_t* list, size_t index);
 
 /**
-  * @}
-  */
- 
+ * @}
+ */
+
 /**
-  * @}
-  */ 
+ * @}
+ */
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
-#endif /* IFX_RADAR_DEVICE_CONTROL_H */
+#endif /* IFX_BASE_LIST_H */

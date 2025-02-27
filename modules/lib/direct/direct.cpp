@@ -147,7 +147,7 @@ static void read_frame_data(void)
     if(!radar.frame_buffer.try_push(frame_buffer))
     {
         rep_err("Frame buffer overflow (size: %d fill: %d)\n",
-            (int)radar.frame_buffer.size(), (int)radar.frame_buffer.fill());
+            radar.frame_buffer.size(), radar.frame_buffer.fill());
         radar.buffer_overflow = true;
     }
 }
@@ -303,7 +303,7 @@ bool direct_device_start(const direct_mode_description_t *mode)
         rep_err("failed to initialize BGT60 driver.\n");
         return false;
     }
-
+    
     test_mode_lsfr_init();
     if(bgt60_enable_data_test_mode(&bgt60_dev, data_integrity_test_enabled) != 0) {
         rep_err(

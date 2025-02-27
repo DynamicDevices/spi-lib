@@ -29,7 +29,7 @@
 
 #if _MSC_VER
 /* suppress warning about unsafe function strcpy */
-#pragma warning(disable:4996)
+#pragma warning(disable : 4996)
 #endif
 
 /*
@@ -39,15 +39,12 @@
 */
 
 #include <ctype.h>
-#include <stdbool.h>
-#include <stddef.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 
-#include "ifxBase/Mem.h"
+#include "Mem.h"
 
-#include "ifxBase/Uuid.h"
+#include "Uuid.h"
 
 /*
 ==============================================================================
@@ -91,8 +88,8 @@ bool ifx_uuid_from_string(const char* s, uint8_t uuid[16])
     if (length < 32)
         return false;
 
-    uint8_t uuid_internal[16] = { 0 };
-    //memset(uuid_internal, 0, sizeof(uuid_internal));
+    uint8_t uuid_internal[16] = {0};
+    // memset(uuid_internal, 0, sizeof(uuid_internal));
 
     int pos = 0;
     for (size_t i = 0; i < length && pos < 32; i++)
@@ -133,6 +130,6 @@ void ifx_uuid_to_string(const uint8_t uuid[16], char* string)
      *    xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx
      */
     sprintf(string, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-        uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7],
-        uuid[8], uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
+            uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7],
+            uuid[8], uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
 }

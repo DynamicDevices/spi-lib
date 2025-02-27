@@ -38,24 +38,35 @@
 #ifndef IFX_BASE_MEM_H
 #define IFX_BASE_MEM_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include "ifxBase/Types.h"
+#include "Types.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
    2. DEFINITIONS
 ==============================================================================
 */
+
+/// By default the data of vectors, matrices, and cubes is aligned to this boundary
+#define IFX_MEMORY_ALIGNMENT 32U
+
+#define IFX_ALIGN(x, SIZE_ALIGNMENT) (((x) + ((SIZE_ALIGNMENT)-1)) & ~((SIZE_ALIGNMENT)-1))
+
+/// Check if pointer is aligned to SIZE_ALIGNMENT
+#define IFX_IS_ALIGNED(POINTER, SIZE_ALIGNMENT) (((uintptr_t)(const void*)(POINTER)) % (SIZE_ALIGNMENT) == 0)
+
 
 /*
 ==============================================================================
@@ -70,17 +81,17 @@ extern "C"
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
+ * @{
+ */
 
 /** @defgroup gr_mem Memory
-  * @brief API for memory management
-  *
-  * Supports memory allocation and deallocation
-  * as well as aligned allocation and aligned deallocation.
-  *
-  * @{
-  */
+ * @brief API for memory management
+ *
+ * Supports memory allocation and deallocation
+ * as well as aligned allocation and aligned deallocation.
+ *
+ * @{
+ */
 
 /**
  * @brief Allocates memory of defined size.
@@ -142,15 +153,15 @@ IFX_DLL_PUBLIC
 void ifx_mem_aligned_free(void* mem);
 
 /**
-  * @}
-  */
- 
+ * @}
+ */
+
 /**
-  * @}
-  */ 
- 
+ * @}
+ */
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_MEM_H */

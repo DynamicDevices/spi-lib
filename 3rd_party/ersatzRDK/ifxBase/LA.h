@@ -38,19 +38,21 @@
 #ifndef IFX_BASE_LA_H
 #define IFX_BASE_LA_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include "ifxBase/Types.h"
-#include "ifxBase/Matrix.h"
+#include "Matrix.h"
+#include "Types.h"
+
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -71,17 +73,17 @@ extern "C"
 */
 
 /** @addtogroup gr_cat_SDK_base
-  * @{
-  */
- 
+ * @{
+ */
+
 /** @defgroup gr_la Linear Algebra
-  * @brief API for Linear Algebra (LA)
-  *
-  * Supports linear algebra operations such as LU,
-  * Cholesky decomposition, or inverting matrices
-  *
-  * @{
-  */
+ * @brief API for Linear Algebra (LA)
+ *
+ * Supports linear algebra operations such as LU,
+ * Cholesky decomposition, or inverting matrices
+ *
+ * @{
+ */
 
 /**
  * @brief Computes inverse of a generic real matrix
@@ -188,15 +190,15 @@ void ifx_la_determinant_c(const ifx_Matrix_C_t* A,
                           ifx_Complex_t* determinant);
 
 /**
-  * @}
-  */
- 
+ * @}
+ */
+
 /**
-  * @}
-  */ 
- 
+ * @}
+ */
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_LA_H */

@@ -45,6 +45,7 @@ static int usleep(uint64_t usec) {
 
 #define BGT60TR13C_CHIPID               (0x000303)
 #define BGT60TR13D_CHIPID               (0x000303)
+#define BGT60UTR11AIP_CHIPID               (0x000707)
 
 #define BGT60_SPI_WR_OP_MSK             (0x01000000UL)
 #define BGT60_SPI_WR_OP_POS             (24UL)
@@ -71,7 +72,6 @@ static uint32_t htonl(uint32_t x)
             ((x & 0x00ff0000UL) >> 8) |
             ((x & 0xff000000UL) >> 24));
 }
-
 int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
 {
     int32_t status;
@@ -79,7 +79,7 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
     uint32_t tmp;
     if ((dev == NULL) || (regs == NULL))
     {
-        rep_msg("DEV | regs NULL\n");
+        rep_msg("DEV | regs NULL\n");    
         return BGT60_STATUS_PARAM_ERROR;
     }
     dev->reset();
@@ -90,31 +90,24 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
         rep_msg( "error set freq\n");
         return status;
     }
-
+    
     status = bgt60_get_reg(dev, BGT60_REG_SFCTL, &chipid);
     if (status != 0)
     {
         rep_msg( "error getting spi/fifo ctrl\n");
         return status;
     }
-
+    
     status = bgt60_get_reg(dev, BGT60_REG_CHIP_ID, &chipid);
-    rep_msg("chip id status %d expected id : %08x got : %08x\n",status,BGT60TR13C_CHIPID,chipid);
-
-    if (chipid != BGT60TR13C_CHIPID)
-    {
-        status = bgt60_get_reg(dev, BGT60_REG_CHIP_ID, &chipid);
-    	rep_msg("chip id status %d expected id : %08x got : %08x\n",status,BGT60TR13C_CHIPID,chipid);
-    }
-
-    if (chipid != BGT60TR13C_CHIPID)
-    {
-	rep_msg("bad chip id\n");
+    if (chipid == BGT60TR13C_CHIPID)
+        rep_msg("get status chipid %d  chip id : %08x BGT60TR13C/BGT60TR13D\n",status,chipid);
+    else if (chipid == BGT60UTR11AIP_CHIPID)
+        rep_msg("get status chipid %d  chip id : %08x BGT60UTR11AIP\n",status,chipid);
+    else
         return BGT60_STATUS_CHIPID_ERROR;
-    }
 
     int reg_idx= 0;
-    while (regs[reg_idx] != 0xFFFFFFFF)
+    while (regs[reg_idx] != 0xFFFFFFFF) // 0xFFFFFFFF: only works for tr13C
     {
         status = bgt60_set_reg(dev, (regs[reg_idx] & BGT60_SPI_REGADR_MSK) >> BGT60_SPI_REGADR_POS, (regs[reg_idx] & BGT60_SPI_DATA_MSK) >> BGT60_SPI_DATA_POS);
         if (status != 0)
@@ -124,6 +117,9 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
         }
         usleep(1000);
         reg_idx++;
+
+        if(reg_idx == 39) // control to work with utr11
+            break;
     }
 
     if (status == BGT60_STATUS_OK)

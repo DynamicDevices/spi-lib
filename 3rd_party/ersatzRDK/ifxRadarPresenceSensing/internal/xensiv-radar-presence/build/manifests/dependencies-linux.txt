@@ -1,0 +1,6 @@
+a23c28099834cbed87d75d8627e7b2f4c2a73ee25f622fd7548611ee8e6f7439 doxygen/doxygen-1.8.14.1.linux.bin.tar.bz2
+114e78b2f6db61aaee314c572e07b0d635f653adc5d31bd1cd0bf31a3db4a6e5 llvm/clang+llvm-6.0.0-x86_64-linux-gnu-ubuntu-14.04.tar.xz
+4913167600ff806690a90a0ed2cbcda3fe560a97c8f9f376004310ece902ca6a gcc/gcc-arm-none-eabi-10.3-2021.07-x86_64-linux.tar.bz2 renamedir
+bf496ce869d0aa8c1f57e4d1a2e50c8f2fb12a6cd7ccb37ad743bb88f6b76a1e cmake/cmake-3.21.1-linux-x86_64.tar.gz
+f8f5792ef13869145dfc68050440b1519158aeed8191b2cb17093b94b5c073d5 ninja/ninja-1.9.0-linux.zip
+8442bc469ea4aa341cc40800ea49976d71c9624af7e4a838837b3176c5b293c5 nanopb/nanopb-0.4.6-linux-x86.tar.gz

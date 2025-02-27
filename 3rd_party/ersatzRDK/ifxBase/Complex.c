@@ -33,8 +33,8 @@
 ==============================================================================
 */
 
-#include "ifxBase/Complex.h"
-#include "ifxBase/Defines.h"
+#include "Complex.h"
+#include "Defines.h"
 
 /*
 ==============================================================================
@@ -53,9 +53,6 @@
    4. LOCAL DATA
 ==============================================================================
 */
-
-const ifx_Complex_t ifx_complex_zero = IFX_COMPLEX_DEF(0.f, 0.f);
-const ifx_Complex_t ifx_complex_one = IFX_COMPLEX_DEF(1.f, 0.f);
 
 /*
 ==============================================================================
@@ -125,11 +122,10 @@ ifx_Complex_t ifx_complex_mul(ifx_Complex_t a,
                               ifx_Complex_t b)
 {
     ifx_Complex_t result;
-    ifx_Float_t ar, ai, br, bi;
-    ar = IFX_COMPLEX_REAL(a);
-    ai = IFX_COMPLEX_IMAG(a);
-    br = IFX_COMPLEX_REAL(b);
-    bi = IFX_COMPLEX_IMAG(b);
+    ifx_Float_t ar = IFX_COMPLEX_REAL(a);
+    ifx_Float_t ai = IFX_COMPLEX_IMAG(a);
+    ifx_Float_t br = IFX_COMPLEX_REAL(b);
+    ifx_Float_t bi = IFX_COMPLEX_IMAG(b);
 
     IFX_COMPLEX_SET(result,
                     ar * br - ai * bi,
@@ -147,7 +143,7 @@ ifx_Complex_t ifx_complex_div(ifx_Complex_t a,
 
     const ifx_Float_t r = IFX_COMPLEX_REAL(b);
     const ifx_Float_t i = IFX_COMPLEX_IMAG(b);
-    const ifx_Float_t b_abs2 = r * r + i * i; // |b|^2
+    const ifx_Float_t b_abs2 = r * r + i * i;  // |b|^2
 
     // a/b = (ab*) / (bb*) = (ab*)/(|b|^2)
     return ifx_complex_div_real(ifx_complex_mul(a, conjb), b_abs2);
@@ -280,9 +276,9 @@ ifx_Complex_t ifx_complex_sqrt(ifx_Complex_t z)
     ifx_Float_t r = IFX_COMPLEX_REAL(z);
     ifx_Float_t i = IFX_COMPLEX_IMAG(z);
 
-    ifx_Float_t z_abs = ifx_complex_abs(z);  
+    ifx_Float_t z_abs = ifx_complex_abs(z);
 
-    IFX_COMPLEX_SET(result, SQRT( (z_abs + r) / 2 ), COPYSIGN(1.0, i)  * SQRT( (z_abs - r) / 2 ));
+    IFX_COMPLEX_SET(result, SQRT((z_abs + r) / 2), COPYSIGN(1.0, i) * SQRT((z_abs - r) / 2));
 
     return result;
 }
@@ -292,27 +288,29 @@ ifx_Complex_t ifx_complex_sqrt(ifx_Complex_t z)
 ifx_Complex_t ifx_complex_pow(ifx_Complex_t z, uint16_t n)
 {
     ifx_Complex_t result_c;
-    ifx_Float_t r, theta, abs_z, arg_z;
 
-    if ( n == 0 ) {
+    if (n == 0)
+    {
         IFX_COMPLEX_SET(result_c, 1, 0);
-		return(result_c);
+        return (result_c);
     }
 
-    if ( n == 1 ) {
-		return(z);
+    if (n == 1)
+    {
+        return (z);
     }
 
-    abs_z = ifx_complex_abs(z);
+    ifx_Float_t abs_z = ifx_complex_abs(z);
 
-	if (abs_z == 0.0) {
+    if (abs_z == 0.0)
+    {
         IFX_COMPLEX_SET(result_c, 1, 0);
-		return(result_c);
-	}
+        return (result_c);
+    }
 
-	arg_z = ifx_complex_arg(z);
-	r = POW(abs_z, n);
-	theta = n * arg_z;
+    ifx_Float_t arg_z = ifx_complex_arg(z);
+    ifx_Float_t r = POW(abs_z, n);
+    ifx_Float_t theta = n * arg_z;
 
     IFX_COMPLEX_SET(result_c, r * COS(theta), r * SIN(theta));
     return result_c;

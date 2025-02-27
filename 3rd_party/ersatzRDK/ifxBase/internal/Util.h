@@ -30,21 +30,20 @@
 #ifndef IFX_BASE_UTIL_INTERNAL_H
 #define IFX_BASE_UTIL_INTERNAL_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
 
-#include <stddef.h>
-#include <stdbool.h>
+#include "../Types.h"
 
-#include "ifxBase/Types.h"
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 
 /*
 ==============================================================================
@@ -63,56 +62,6 @@ extern "C"
    4. FUNCTION PROTOTYPES
 ==============================================================================
 */
-
-/**
- * @brief Check for overflow in multiplication of two integers of type size_t
- *
- * This function computes the product of a and b. If the multiplication
- * overflows true is returned. If the multiplication does not overflow, the
- * result a*b is written to result and false is returned.
- *
- * @param [in]  a       first multiplicand
- * @param [in]  b       second multiplicand
- * @param [out] result  a*b if no overflow occurs
- * @retval true         if an overflow occurs
- * @retval false        if no overflow occurs
- */
-IFX_DLL_PUBLIC
-bool ifx_util_overflow_mul_size_t(size_t a, size_t b, size_t* result);
-
-/**
- * @brief Check for overflow in multiplication of three integers of type size_t
- *
- * This function computes the product of a, b, and c. If the multiplication
- * overflows true is returned. If the multiplication does not overflow, the
- * result a*b*c is written to result and false is returned.
- *
- * @param [in]  a       first multiplicand
- * @param [in]  b       second multiplicand
- * @param [in]  c       third multiplicand
- * @param [out] result  a*b*c if no overflow occurs
- * @retval true         if an overflow occurs
- * @retval false        if no overflow occurs
- */
-IFX_DLL_PUBLIC
-bool ifx_util_overflow_mul3_size_t(size_t a, size_t b, size_t c, size_t* result);
-
-/**
- * @brief Check for overflow in addition of two integers of type size_t
- *
- * This function computes the sum of a and b. If the addition
- * overflows true is returned. If the addition does not overflow, the
- * result a+b is written to result and false is returned.
- *
- * @param [in]  a       first addend
- * @param [in]  b       second addend
- * @param [out] result  a+b if no overflow occurs
- * @retval true         if an overflow occurs
- * @retval false        if no overflow occurs
- */
-IFX_DLL_PUBLIC
-bool ifx_util_overflow_add_size_t(size_t a, size_t b, size_t* result);
-
 
 /*
  * @brief Create copy of string
@@ -140,9 +89,9 @@ char* ifx_util_strdup(const char* orig);
 IFX_DLL_PUBLIC
 uint32_t ifx_util_popcount(uint32_t mask);
 
- 
+
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_UTIL_INTERNAL_H */

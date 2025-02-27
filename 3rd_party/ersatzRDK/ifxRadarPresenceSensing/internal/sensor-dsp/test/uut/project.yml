@@ -1,0 +1,164 @@
+---
+
+# Ceedling project configuration
+# Syntax reference:
+# https://github.com/ThrowTheSwitch/Ceedling/blob/master/docs/CeedlingPacket.md
+
+:project:
+  :use_exceptions: FALSE
+  :use_test_preprocessor: TRUE
+  :use_auxiliary_dependencies: TRUE
+  :build_root: build
+  :release_build: TRUE
+  :test_file_prefix: test_
+  :which_ceedling: gem
+  # Default verbosity level is '3'.
+  # '4' enables debugging of all shell commands (gcc, gcovr)
+  :verbosity: 3
+
+#:release_build:
+#  :output: MyApp.out
+#  :use_assembly: FALSE
+
+:environment:
+
+:extension:
+  :executable: .exe
+
+:paths:
+  :test:
+    - +:.
+    - -:stubs
+    - -:helper
+  :source:
+    - ../../*
+  :include:
+    - ../../output/libs/core-lib/include
+  :support:
+    - stubs
+    - helper
+  :libraries: []
+
+:defines:
+  # in order to add common defines:
+  #  1) remove the trailing [] from the :common: section
+  #  2) add entries to the :common: section (e.g. :test: has TEST defined)
+  :commmon: &common_defines []
+  :test:
+    - *common_defines
+    - __asm=
+    - UNITY_INCLUDE_PRINT_FORMATTED
+    - CMOCK_MEM_DYNAMIC
+    - __GNUC_PYTHON__
+  :test_preprocess:
+    - *common_defines
+    - __asm=
+
+# https://github.com/ThrowTheSwitch/Ceedling/issues/284#issuecomment-492571738
+:flags:
+  :test:
+    :compile:
+      :*:
+        - -std=c11
+        - -g3
+        - -O0
+    :link:
+      :*:
+        - -std=c11
+        - -g3
+        - -lm
+  :gcov:
+    :compile:
+      :*:
+        - -std=c11
+        - -U__STRICT_ANSI__
+        - -msse
+        - -mfpmath=sse
+    :link:
+      :*:
+        - -std=c11
+        - -lm
+        - -msse
+        - -mfpmath=sse
+
+:cmock:
+  :mock_prefix: mock_
+  :when_no_prototypes: :warn
+  :enforce_strict_ordering: TRUE
+  :plugins:
+    - :ignore
+    - :callback
+  :treat_as:
+    uint8:    HEX8
+    uint16:   HEX16
+    uint32:   UINT32
+    int8:     INT8
+    bool:     UINT8
+
+# https://github.com/ThrowTheSwitch/Ceedling/blob/master/plugins/gcov/README.md
+:gcov:
+  :utilities:
+    - gcovr
+  :reports:
+    - HtmlDetailed
+    - Text
+  :gcovr:
+    :text_artifact_filename: gcovr.log
+    :branches: true
+    :print_summary: true
+    :html_artifact_filename: index.html
+    :html_title: "UUT Code Coverage Report"
+    :report_exclude: "../../output/.*|^build/.*|^stubs/.*|test_.*|.*/mock_.*|^helper/.*"
+    :keep: true
+
+#:tools:
+# Ceedling defaults to using gcc for compiling, linking, etc.
+# As [:tools] is blank, gcc will be used (so long as it's in your system path)
+# See documentation to configure a given toolchain for use
+
+# LIBRARIES
+# These libraries are automatically injected into the build process. Those specified as
+# common will be used in all types of builds. Otherwise, libraries can be injected in just
+# tests or releases. These options are MERGED with the options in supplemental yaml files.
+:libraries:
+  :placement: :end
+  :flag: "-l${1}"  # or "-L ${1}" for example
+  :common: &common_libraries []
+  :test:
+    - *common_libraries
+  :release:
+    - *common_libraries
+  :system:
+    - m
+
+:dependencies:
+  :libraries:
+    - :name: CMSIS-DSP
+      :source_path:   ../../output/libs/cmsis-dsp/CMSIS-DSP-1.10.1
+      :build_path:    deps/cmsis-dsp/build
+      :artifact_path: deps/cmsis-dsp/build
+      :fetch:
+        :method: :none
+      :environment: []
+      :build:
+        - cmake -DFLOAT16=ON -DHOST=ON -GNinja ..
+        - cmake --build . --parallel 8
+        - cp -r ../../../../../output/libs/cmsis-dsp/CMSIS-DSP-1.10.1/Include .
+      :artifacts:
+        :static_libraries:
+          - bin_dsp/libCMSISDSP.a
+        :includes:
+          - Include/**
+
+:plugins:
+  :load_paths:
+    - "#{Ceedling.load_path}"
+  :enabled:
+    - gcov
+    #- stdout_pretty_tests_report
+    - module_generator
+    - raw_output_report
+    - stdout_gtestlike_tests_report
+    - junit_tests_report
+    - dependencies
+...

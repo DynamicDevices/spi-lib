@@ -33,8 +33,6 @@
 ==============================================================================
 */
 
-#include <stddef.h>
-#include <string.h>
 
 /*
 ==============================================================================
@@ -42,21 +40,43 @@
 ==============================================================================
 */
 
-#if (_MSC_VER && !__INTEL_COMPILER) || ( (_WIN32 || _WIN64) && __GNUC__)
+#if (_MSC_VER && !__INTEL_COMPILER) || ((_WIN32 || _WIN64) && __GNUC__)
 #include <malloc.h>
 #define ALIGNED_MALLOC(size, align, mem) mem = _aligned_malloc((size), (alignment))
-
-#define ALIGNED_FREE(mem)                do { _aligned_free(mem); mem = NULL; } while(0)
-
+#define ALIGNED_FREE(mem)   \
+    do                      \
+    {                       \
+        _aligned_free(mem); \
+        (mem) = NULL;       \
+    } while (0)
 #else
+// posix_memalign requires _POSIX_C_SOURCE >= 200112L. See manpage of posix_memalign for more information.
+// This define needs to be set before including stdlib.h.
+#ifndef _POSIX_C_SOURCE
+// NOLINTNEXTLINE(bugprone-reserved-identifier)
 #define _POSIX_C_SOURCE 200809L
+#endif
+
 #include <stdlib.h>
-#define ALIGNED_MALLOC(size, align, mem) do { if(posix_memalign(&mem, (alignment), (size)) != 0) { mem = NULL; } } while(0)
-#define ALIGNED_FREE(mem)                do { free(mem); mem = NULL; } while(0)
+
+#define ALIGNED_MALLOC(size, align, mem)                      \
+    do                                                        \
+    {                                                         \
+        if (posix_memalign(&(mem), (alignment), (size)) != 0) \
+        {                                                     \
+            (mem) = NULL;                                     \
+        }                                                     \
+    } while (0)
+#define ALIGNED_FREE(mem) \
+    do                    \
+    {                     \
+        free(mem);        \
+        (mem) = NULL;     \
+    } while (0)
 #endif
 
 // include only here to avoid warning about posix_memalign
-#include "ifxBase/Mem.h"
+#include "Mem.h"
 
 /*
 ==============================================================================
@@ -87,9 +107,6 @@ void* ifx_mem_aligned_alloc(size_t size,
 
     void* mem = 0;
     ALIGNED_MALLOC(size, alignment, mem);
-    if (mem != NULL) {
-        memset(mem, 0, size);
-    }
     return mem;
 }
 

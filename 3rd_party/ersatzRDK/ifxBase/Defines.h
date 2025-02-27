@@ -37,18 +37,18 @@
 #ifndef IFX_BASE_DEFINES_H
 #define IFX_BASE_DEFINES_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
+#include <math.h>  // NOLINT(modernize-deprecated-headers)
 
-#include <math.h>
+
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 
 /*
@@ -58,18 +58,15 @@ extern "C"
 */
 
 #ifndef MAX
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #endif
 
 #ifndef MIN
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
 #endif
 
 // Ignore variable if unused (prevents compiler warnings about unused variable)
 #define IFX_IGNORE(x) (void)(x)
-
-#define MEMORY_ALIGNMENT 32
-#define ALIGN(x) (((x) + (MEMORY_ALIGNMENT - 1)) & ~(MEMORY_ALIGNMENT - 1))
 
 /* M_PI is not defined by the C standard. E.g., with gcc and -std=gnu11 it is
  * defined, with -std=c99 it isn't. Therefore, don't rely on M_PI.
@@ -77,68 +74,69 @@ extern "C"
 #define IFX_PI ((ifx_Float_t)(3.14159265358979323846))
 
 /**
- * NaN on types on infineon 
+ * NaN on types on infineon
  */
 #define IFX_NAN NAN
 
 /**
- * Infinity on types on infineon 
+ * Infinity on types on infineon
  */
 #define IFX_INF_POS INFINITY
-#define IFX_INF IFX_INF_POS
+#define IFX_INF     IFX_INF_POS
 
 /**
- * -Infinity on types on infineon 
+ * -Infinity on types on infineon
  */
 #define IFX_INF_NEG (-INFINITY)
 
 
 // macro replacement for sincos and sincosf
-#define SINCOS(x,s,c) \
-   do { \
+#define SINCOS(x, s, c)      \
+    do                       \
+    {                        \
         ifx_Float_t arg = x; \
-        *s = SIN(arg); \
-        *c = COS(arg); \
-    } while(0)
+        *(s) = SIN(arg);     \
+        *(c) = COS(arg);     \
+    } while (0)
 
-#define CABS   cabsf
-#define FABS   fabsf
-#define CREAL  crealf
-#define CIMAG  cimagf
-#define LOG10  log10f
-#define LOGN   logf
-#define LOG1P  log1pf
-#define SIN    sinf
-#define ASIN   asinf
-#define SINH   sinhf
-#define ASINH  asinhf
-#define COS    cosf
-#define ACOS   acosf
-#define ATAN   atanf
-#define ATAN2  atan2f
-#define COSH   coshf
-#define ACOSH  acoshf
-#define FLOOR  floorf
-#define CEIL   ceilf
-#define ROUND  roundf
-#define HYPOT  hypotf
-#define POW    powf
-#define SQRT   sqrtf
-#define SIND(x) (sinf(fmodf((x),360) * IFX_PI / 180))
+#define CABS      cabsf
+#define FABS      fabsf
+#define CREAL     crealf
+#define CIMAG     cimagf
+#define LOG10     log10f
+#define LOGN      logf
+#define LOG1P     log1pf
+#define SIN       sinf
+#define ASIN      asinf
+#define SINH      sinhf
+#define ASINH     asinhf
+#define COS       cosf
+#define ACOS      acosf
+#define ATAN      atanf
+#define ATAN2     atan2f
+#define COSH      coshf
+#define ACOSH     acoshf
+#define FLOOR     floorf
+#define CEIL      ceilf
+#define ROUND     roundf
+#define HYPOT     hypotf
+#define POW       powf
+#define SQRT      sqrtf
+#define SIND(x)   (sinf(fmodf((x), 360) * IFX_PI / 180))
 #define TGAMMA(x) tgammaf(x)
-#define EXP(x)  expf(x)
-#define COPYSIGN copysignf
-#define TAN     tanf
+#define EXP(x)    expf(x)
+#define COPYSIGN  copysignf
+#define TAN       tanf
 
 #ifdef DISABLE_THREAD_LOCAL
-    // IFX_THREAD_LOCAL is a noop
-    #define IFX_THREAD_LOCAL
+// IFX_THREAD_LOCAL is a noop
+#define IFX_THREAD_LOCAL
 #else
-    #if defined(__GNUC__)
-        #define IFX_THREAD_LOCAL __thread
-    #elif defined(_MSC_VER)
-        #define IFX_THREAD_LOCAL __declspec( thread )
-    #endif
+#if defined(__GNUC__)
+#define IFX_THREAD_LOCAL __thread
+#elif defined(_MSC_VER)
+#define IFX_THREAD_LOCAL __declspec(thread)
+#endif
 #endif
 
 /*
@@ -154,7 +152,7 @@ extern "C"
 */
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_DEFINES_H */

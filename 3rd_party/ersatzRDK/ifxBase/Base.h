@@ -40,18 +40,11 @@
 #ifndef IFX_BASE_H
 #define IFX_BASE_H
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif // __cplusplus
-
 /*
 ==============================================================================
    1. INCLUDE FILES
 ==============================================================================
 */
-
-#include <stddef.h>
 
 #include <ifxBase/Complex.h>
 #include <ifxBase/Cube.h>
@@ -66,10 +59,17 @@ extern "C"
 #include <ifxBase/Types.h>
 #include <ifxBase/Uuid.h>
 #include <ifxBase/Vector.h>
+#include <ifxBase/Version.h>
 
 
 #ifdef __cplusplus
-} // extern "C"
-#endif // __cplusplus
+extern "C"
+{
+#endif
+
+
+#ifdef __cplusplus
+}  // extern "C"
+#endif
 
 #endif /* IFX_BASE_H */
