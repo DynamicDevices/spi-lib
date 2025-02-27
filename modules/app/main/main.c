@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
 
         rep_mark_frame_processing_start();
 
-        rep_msg("%f %f %f %f", 
+        rep_msg("%f %f %f %f\n", 
             IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 2, 0),
