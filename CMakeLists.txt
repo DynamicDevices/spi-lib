@@ -88,3 +88,4 @@ endif ()
 
 # installation
 install(TARGETS seamless_dev_spi DESTINATION bin)
+install(TARGETS sdk_base DESTINATION lib)
