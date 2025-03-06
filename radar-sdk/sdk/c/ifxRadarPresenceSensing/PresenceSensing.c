@@ -247,6 +247,7 @@ void ifx_presence_sensing_get_config_defaults(ifx_Radar_Sensor_t sensor_type,
     IFX_ERR_BRK_NULL(sensor_config);
     IFX_ERR_BRK_NULL(presence_config);
 
+#if 0
     /* default sensor configuration for presence handle */
     if (sensor_type == IFX_AVIAN_BGT60UTR11AIP)
     {
@@ -283,6 +284,43 @@ void ifx_presence_sensing_get_config_defaults(ifx_Radar_Sensor_t sensor_type,
     presence_config->min_detection_range_m = IFX_PRESENCE_SENSING_DEFAULT_MIN_RANGE_M;
     presence_config->max_detection_range_m = IFX_PRESENCE_SENSING_DEFAULT_MAX_RANGE_M;
     presence_config->sensitivity_threshold = IFX_PRESENCE_SENSING_DEFAULT_SENSITIVITY;
+#endif
+
+
+#define XENSIV_BGT60TRXX_CONF_DEVICE (XENSIV_DEVICE_BGT60TR13C)
+#define XENSIV_BGT60TRXX_CONF_START_FREQ_HZ (61020099000)
+#define XENSIV_BGT60TRXX_CONF_END_FREQ_HZ (61479903000)
+#define XENSIV_BGT60TRXX_CONF_NUM_SAMPLES_PER_CHIRP (128)
+#define XENSIV_BGT60TRXX_CONF_NUM_CHIRPS_PER_FRAME (1)
+#define XENSIV_BGT60TRXX_CONF_NUM_RX_ANTENNAS (1)
+#define XENSIV_BGT60TRXX_CONF_NUM_TX_ANTENNAS (1)
+#define XENSIV_BGT60TRXX_CONF_SAMPLE_RATE (2352941)
+#define XENSIV_BGT60TRXX_CONF_CHIRP_REPETITION_TIME_S (6.21125e-05)
+#define XENSIV_BGT60TRXX_CONF_FRAME_REPETITION_TIME_S (0.00500407)
+#define XENSIV_BGT60TRXX_CONF_NUM_REGS (38)
+
+sensor_config->rx_mask = 4;
+sensor_config->aaf_cutoff_Hz = IFX_SENSOR_DEFAULT_AAF_CUTOFF_Hz;
+sensor_config->sample_rate_Hz = IFX_SENSOR_DEFAULT_SAMPLING_FREQ_Hz;
+sensor_config->tx_mask = 1;
+
+sensor_config->if_gain_dB = IFX_SENSOR_DEFAULT_IF_GAIN_dB;
+sensor_config->start_frequency_Hz = XENSIV_BGT60TRXX_CONF_START_FREQ_HZ;
+sensor_config->end_frequency_Hz = XENSIV_BGT60TRXX_CONF_END_FREQ_HZ;
+
+sensor_config->num_samples_per_chirp = XENSIV_BGT60TRXX_CONF_NUM_SAMPLES_PER_CHIRP;
+sensor_config->num_chirps_per_frame = XENSIV_BGT60TRXX_CONF_NUM_CHIRPS_PER_FRAME;
+sensor_config->chirp_repetition_time_s = XENSIV_BGT60TRXX_CONF_CHIRP_REPETITION_TIME_S;
+sensor_config->frame_repetition_time_s = XENSIV_BGT60TRXX_CONF_FRAME_REPETITION_TIME_S;
+sensor_config->hp_cutoff_Hz = IFX_SENSOR_DEFAULT_HP_CUTOFF_Hz;
+sensor_config->tx_power_level = IFX_SENSOR_DEFAULT_TX_POWER_LEVEL;
+sensor_config->mimo_mode = IFX_MIMO_OFF;
+
+/* default presence handle algo configuration */
+presence_config->min_detection_range_m = IFX_PRESENCE_SENSING_DEFAULT_MIN_RANGE_M;
+presence_config->max_detection_range_m = IFX_PRESENCE_SENSING_DEFAULT_MAX_RANGE_M;
+presence_config->sensitivity_threshold = IFX_PRESENCE_SENSING_DEFAULT_SENSITIVITY;
+
 }
 
 //--------------------------------------------------------------------------------------------
