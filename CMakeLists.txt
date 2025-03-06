@@ -24,7 +24,7 @@ file(GLOB app_main_src
 	)
 
 add_library(app_main_lib STATIC ${app_main_src})
-target_link_libraries(app_main_lib PUBLIC interface_app sdk_base)
+target_link_libraries(app_main_lib PUBLIC interface_app sdk_base sdk_presence_sensing)
 #target_link_libraries(app_main_lib PUBLIC interface_app)
 target_include_directories(app_main_lib PUBLIC "radar-sdk/sdk/c")
 
@@ -34,7 +34,7 @@ file(GLOB app_framework_src
 	)
 
 add_library(app_framework_lib STATIC ${app_framework_src})
-target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base)
+target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base  sdk_presence_sensing)
 target_include_directories(app_framework_lib PUBLIC "radar-sdk/sdk/c")
 
 file(GLOB app_stump_src

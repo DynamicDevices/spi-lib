@@ -36,6 +36,9 @@
 #include "interface/app_argparse.h"
 #include "ifxBase/Error.h"
 
+#include "ifxAvian/Avian.h"
+#include "ifxRadarPresenceSensing/PresenceSensing.h"
+
 static uint32_t frame_limit = 0;
 
 static bool set_frames(int v) {
@@ -84,6 +87,17 @@ int main(int argc, char* argv[])
 
     install_abort_request_signal_handler();
 
+    // Presence implementation
+
+    rep_msg("Setup presence sensing\n");
+
+    ifx_Avian_Config_t sensor_config;
+    ifx_Presence_Sensing_Config_t presence_config;
+    ifx_Presence_Sensing_t* presence_handle;
+
+    ifx_presence_sensing_get_config_defaults(IFX_AVIAN_BGT60TR13C, &sensor_config, &presence_config);
+    presence_handle = ifx_presence_sensing_create(&sensor_config, &presence_config);    
+
     rep_mark_processing_start();
 
     while (!abort_requested())
@@ -104,6 +118,7 @@ int main(int argc, char* argv[])
 
         rep_mark_frame_processing_start();
 
+#if 0
         rep_msg("%f %f %f %f\n", 
             IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
@@ -113,6 +128,13 @@ int main(int argc, char* argv[])
             radar_data_frame->rows, 
             radar_data_frame->cols, 
             radar_data_frame->slices); */
+#endif
+
+        ifx_Presence_Sensing_Result_t* result;
+        ifx_presence_sensing_run(presence_handle, radar_data_frame,
+                result);
+        rep_msg("Presence sensing result: %d %f\n", 
+            result->target_state, result->target_distance_m);
 
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
