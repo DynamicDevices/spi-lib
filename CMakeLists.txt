@@ -4,12 +4,10 @@ project(spi-dev-utr11)
 set(STV_3RD_PARTY_DIR "${CMAKE_CURRENT_SOURCE_DIR}/3rd_party")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/scripts/cmake;${CMAKE_MODULE_PATH}")
 
-## Add sdk_base_obj
+## Add sdk_base
 set(RDK_HAS_DEVICE_CONTROL FALSE)
-add_subdirectory("${STV_3RD_PARTY_DIR}/3rd_party" EXCLUDE_FROM_ALL)
-add_subdirectory("${STV_3RD_PARTY_DIR}/ersatzRDK" EXCLUDE_FROM_ALL)
-#add_subdirectory("${STV_3RD_PARTY_DIR}/examples/" EXCLUDE_FROM_ALL)
-#add_subdirectory("${STV_3RD_PARTY_DIR}/tools/" EXCLUDE_FROM_ALL)
+add_subdirectory("radar-sdk")
+add_subdirectory("${STV_3RD_PARTY_DIR}/examples/c/avian")
 
 ## determine the target platform
 include(TargetPlatform)
@@ -26,7 +24,9 @@ file(GLOB app_main_src
 	)
 
 add_library(app_main_lib STATIC ${app_main_src})
-target_link_libraries(app_main_lib PUBLIC interface_app sdk_base_obj)
+target_link_libraries(app_main_lib PUBLIC interface_app sdk_base)
+#target_link_libraries(app_main_lib PUBLIC interface_app)
+target_include_directories(app_main_lib PUBLIC "radar-sdk/sdk/c")
 
 file(GLOB app_framework_src
 		public/interface/*.h
@@ -34,7 +34,8 @@ file(GLOB app_framework_src
 	)
 
 add_library(app_framework_lib STATIC ${app_framework_src})
-target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base_obj)
+target_link_libraries(app_framework_lib PUBLIC interface_app sdk_base)
+target_include_directories(app_framework_lib PUBLIC "radar-sdk/sdk/c")
 
 file(GLOB app_stump_src
 		public/interface/*.h
@@ -61,13 +62,13 @@ file(GLOB direct_src
 add_library(lib_direct STATIC ${direct_src})
 target_include_directories(lib_direct PRIVATE modules/lib/direct)
 target_link_libraries(lib_direct PRIVATE interface_app)
-target_link_libraries(lib_direct PUBLIC sdk_base_obj interface_direct)
+target_link_libraries(lib_direct PUBLIC sdk_base interface_direct)
 
 file(GLOB acq_spi_src
 	 modules/acquisition/spi/*.c
 	)
 add_library(lib_acq_spi STATIC ${acq_spi_src})
-target_link_libraries(lib_acq_spi PUBLIC interface_app interface_direct sdk_base_obj)
+target_link_libraries(lib_acq_spi PUBLIC interface_app interface_direct sdk_base)
 
 # executable for data acquisition via /dev/spi on linux
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")

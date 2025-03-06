@@ -38,7 +38,7 @@
 
 #include "ifxAvian/DeviceControl.h"
 #include "ifxRadarPresenceSensing/PresenceSensing.h"
-#include "ifxRadarSegmentation/Segmentation.h"
+//#include "ifxRadarSegmentation/Segmentation.h"
 
 
 #ifdef __cplusplus
@@ -138,13 +138,13 @@ bool ifx_json_get_device_config_single_shape(ifx_json_t* json, ifx_Avian_Config_
 
 /** @brief Return true if fmcw_scene configuration is present */
 bool ifx_json_has_config_scene(const ifx_json_t* json);
-void ifx_json_set_device_config_scene(ifx_json_t* json, const ifx_Avian_Metrics_t* metrics);
-bool ifx_json_get_device_config_scene(ifx_json_t* json, ifx_Avian_Metrics_t* metrics);
+//void ifx_json_set_device_config_scene(ifx_json_t* json, const ifx_Avian_Metrics_t* metrics);
+//bool ifx_json_get_device_config_scene(ifx_json_t* json, ifx_Avian_Metrics_t* metrics);
 
 /** @brief Return true if segmentation configuration is present */
 bool ifx_json_has_segmentation(const ifx_json_t* json);
-void ifx_json_set_segmentation(ifx_json_t* json, const ifx_Segmentation_Config_t* segmentation_config);
-bool ifx_json_get_segmentation(ifx_json_t* json, const ifx_Avian_Config_t* device_config, ifx_Segmentation_Config_t* config_segmentation);
+//void ifx_json_set_segmentation(ifx_json_t* json, const ifx_Segmentation_Config_t* segmentation_config);
+//bool ifx_json_get_segmentation(ifx_json_t* json, const ifx_Avian_Config_t* device_config, ifx_Segmentation_Config_t* config_segmentation);
 
 void ifx_json_set_config_presence_sensing(ifx_json_t* json, const ifx_Presence_Sensing_Config_t* presence_config);
 bool ifx_json_has_config_presence_sensing(const ifx_json_t* json);

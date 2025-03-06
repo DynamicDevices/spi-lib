@@ -716,6 +716,8 @@ bool ifxJsonConfiguration::has_config_segmentation() const
     return m_json.contains("segmentation");
 }
 
+#if 0
+
 /**
  * @brief Set segmentation configuration
  */
@@ -767,6 +769,8 @@ void ifxJsonConfiguration::get_config_segmentation(const ifx_Avian_Config_t* dev
 
     *config_segmentation = config;
 }
+
+#endif
 
 /**
  * @brief Return true if fmcw_single_shape configuration is present
@@ -981,15 +985,21 @@ void ifx_json_set_device_config_single_shape(ifx_json_t* json, const ifx_Avian_C
     json->obj.set_config_fmcw_single_shape(config);
 }
 
+#if 0
+
 void ifx_json_set_segmentation(ifx_json_t* json, const ifx_Segmentation_Config_t* segmentation_config)
 {
     json->obj.set_config_segmentation(segmentation_config);
 }
 
+#endif
+
 bool ifx_json_has_segmentation(const ifx_json_t* json)
 {
     return json->obj.has_config_segmentation();
 }
+
+#if 0
 
 bool ifx_json_get_segmentation(ifx_json_t* json,
                                const ifx_Avian_Config_t* device_config,
@@ -1007,6 +1017,7 @@ bool ifx_json_get_segmentation(ifx_json_t* json,
     }
 }
 
+#endif
 
 //======================= Presence Sensing Config  ================================
 

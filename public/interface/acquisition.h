@@ -42,7 +42,7 @@
 #define IFX_ACQUISITION_H
 
 #include <stdbool.h>
-#include "ifxBase/Cube.h"
+#include "../../../../radar-sdk/sdk/c/ifxBase/Cube.h"
 #include "interface/app_utils.h"
 #include "interface/app_argparse.h"
 //#include "ifxSeamless/Segmentation.h"

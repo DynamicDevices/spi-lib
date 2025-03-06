@@ -56,7 +56,7 @@
 
 #include "common.h"
 #include "argparse.h"
-#include "ifxBase/Version.h"
+//#include "ifxBase/Version.h"
 #include "time_formatter.h"
 #include "util.h"
 
@@ -397,9 +397,11 @@ int app_start(int argc, char** argv, app_t* application, void* app_context)
         goto cleanup;
     }
 
+#if 0
     app_print(
         "Radar SDK Version: %s\n",
         ifx_sdk_get_version_string_full());
+#endif
 
     // disable buffering unless --buffer was given
     if (!buffer)
@@ -533,6 +535,7 @@ int app_start(int argc, char** argv, app_t* application, void* app_context)
                     goto cleanup;
                 }
             }
+#if 0
             else if (ifx_json_has_config_scene(json))
             {
                 ifx_Avian_Metrics_t scene_config;
@@ -552,6 +555,7 @@ int app_start(int argc, char** argv, app_t* application, void* app_context)
                     goto cleanup;
                 }
             }
+#endif
         }
     }
     else if (!is_daq_recording)

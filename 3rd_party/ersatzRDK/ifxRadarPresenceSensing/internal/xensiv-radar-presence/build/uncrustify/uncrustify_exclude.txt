@@ -1,7 +1,0 @@
-./_coverity_/
-./deploy/
-./devops_scripts/
-./output/
-./test/chaitea/
-./test/fut/
-./test/uut

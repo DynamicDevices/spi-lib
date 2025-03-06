@@ -46,7 +46,7 @@
 
 #include "ifxAvian/Avian.h"
 #include "ifxRadarPresenceSensing/PresenceSensing.h"
-#include "ifxRadarSegmentation/RadarSegmentation.h"
+//#include "ifxRadarSegmentation/RadarSegmentation.h"
 
 /*
 ==============================================================================
@@ -124,8 +124,8 @@ public:
     void set_config_fmcw_single_shape(const ifx_Avian_Config_t* config);
 
     bool has_config_segmentation() const;
-    void get_config_segmentation(const ifx_Avian_Config_t* device_config, ifx_Segmentation_Config_t* config_segmentation);
-    void set_config_segmentation(const ifx_Segmentation_Config_t* config);
+//    void get_config_segmentation(const ifx_Avian_Config_t* device_config, ifx_Segmentation_Config_t* config_segmentation);
+//    void set_config_segmentation(const ifx_Segmentation_Config_t* config);
 
     bool has_config_presence_sensing() const;
     void get_config_presence_sensing(ifx_Presence_Sensing_Config_t* config);

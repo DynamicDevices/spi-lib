@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblib_direct.a CMakeFiles/lib_direct.dir/modules/lib/direct/default_mode_table.c.o CMakeFiles/lib_direct.dir/modules/lib/direct/direct.cpp.o CMakeFiles/lib_direct.dir/modules/lib/direct/driver/bgt60.c.o
+/usr/bin/ranlib liblib_direct.a

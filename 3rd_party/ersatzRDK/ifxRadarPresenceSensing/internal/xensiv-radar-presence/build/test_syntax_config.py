@@ -1,5 +1,0 @@
-folderList = ['.']
-excludeDirs = []
-typeFileToCheck = ['.c', '.h', '.s', '.S', '.sct', '.icf', '.ld']
-typeFileToAcceptNonAscii = []
-wordToCheck = ['XXX', 'FIXME', 'TODO']

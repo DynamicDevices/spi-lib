@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblib_acq_spi.a CMakeFiles/lib_acq_spi.dir/modules/acquisition/spi/acq_spi.c.o
+/usr/bin/ranlib liblib_acq_spi.a

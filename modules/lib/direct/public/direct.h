@@ -45,7 +45,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "ifxBase/Cube.h"
+#include "../../../../radar-sdk/sdk/c/ifxBase/Cube.h"
 
 typedef enum {
     IFX_ORIENTATION_LANDSCAPE = 0U, /**< Sensor is oriented in landscape format (default) */
