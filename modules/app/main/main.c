@@ -107,6 +107,8 @@ int main(int argc, char* argv[])
 
     rep_mark_processing_start();
 
+    rep_msg("Processing starting\n");
+
     while (!abort_requested())
     {
         ifx_Cube_R_t *radar_data_frame = NULL;
@@ -137,9 +139,14 @@ int main(int argc, char* argv[])
             radar_data_frame->slices); */
 #endif
 
+        rep_msg("Analysis starting\n");
+
         ifx_Presence_Sensing_Result_t* result;
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 result);
+
+//        rep_msg("Analysis done\n");
+
         rep_msg("Presence sensing result: %d %f\n", 
             result->target_state, result->target_distance_m);
 
