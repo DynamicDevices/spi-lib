@@ -89,3 +89,4 @@ endif ()
 # installation
 install(TARGETS seamless_dev_spi DESTINATION bin)
 install(TARGETS sdk_base DESTINATION lib)
+install(TARGETS sdk_presence_sensing DESTINATION lib)
