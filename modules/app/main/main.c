@@ -95,8 +95,15 @@ int main(int argc, char* argv[])
     ifx_Presence_Sensing_Config_t presence_config;
     ifx_Presence_Sensing_t* presence_handle;
 
+    rep_msg("Get defaults\n");
+
     ifx_presence_sensing_get_config_defaults(IFX_AVIAN_BGT60TR13C, &sensor_config, &presence_config);
+
+    rep_msg("Create\n");
+
     presence_handle = ifx_presence_sensing_create(&sensor_config, &presence_config);    
+
+    rep_msg("Create done\n");
 
     rep_mark_processing_start();
 
