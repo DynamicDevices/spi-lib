@@ -79,6 +79,8 @@ static const uint32_t regs_landscape_460MHz[] =
 
 #endif
 
+#ifdef MICHAEL_REGS
+
 #ifndef XENSIV_BGT60TRXX_CONF_H
 #define XENSIV_BGT60TRXX_CONF_H
 
@@ -95,7 +97,6 @@ static const uint32_t regs_landscape_460MHz[] =
 #define XENSIV_BGT60TRXX_CONF_NUM_REGS (38)
 
 #define XENSIV_BGT60TRXX_CONF_IMPL
-
 #if defined(XENSIV_BGT60TRXX_CONF_IMPL)
 const uint32_t regs_landscape_460MHz[] = {
     0x11e8270UL,
@@ -136,6 +137,73 @@ const uint32_t regs_landscape_460MHz[] = {
     0x9f000100UL,
     0xad000000UL,
     0xb7000000UL,
+};
+#endif /* XENSIV_BGT60TRXX_CONF_IMPL */
+
+#endif /* XENSIV_BGT60TRXX_CONF_H */
+
+#endif
+
+/* XENSIV BGT60TRXX register configurator, SDK version3.6.4+4b4a62456 */
+
+#ifndef XENSIV_BGT60TRXX_CONF_H
+#define XENSIV_BGT60TRXX_CONF_H
+
+#define XENSIV_BGT60TRXX_CONF_DEVICE (XENSIV_DEVICE_BGT60TR13C)
+#define XENSIV_BGT60TRXX_CONF_START_FREQ_HZ (61020099000)
+#define XENSIV_BGT60TRXX_CONF_END_FREQ_HZ (61479903000)
+#define XENSIV_BGT60TRXX_CONF_NUM_SAMPLES_PER_CHIRP (128)
+#define XENSIV_BGT60TRXX_CONF_NUM_CHIRPS_PER_FRAME (16)
+#define XENSIV_BGT60TRXX_CONF_NUM_RX_ANTENNAS (1)
+#define XENSIV_BGT60TRXX_CONF_NUM_TX_ANTENNAS (1)
+#define XENSIV_BGT60TRXX_CONF_SAMPLE_RATE (2352941)
+#define XENSIV_BGT60TRXX_CONF_CHIRP_REPETITION_TIME_S (6.99625e-05)
+#define XENSIV_BGT60TRXX_CONF_FRAME_REPETITION_TIME_S (0.0050039)
+#define XENSIV_BGT60TRXX_CONF_NUM_REGS (38)
+
+#define XENSIV_BGT60TRXX_CONF_IMPL
+
+#if defined(XENSIV_BGT60TRXX_CONF_IMPL)
+const uint32_t regs_landscape_460MHz[] = {
+    0x11e8270UL,
+    0x3088210UL,
+    0x9e967fdUL,
+    0xb0805b4UL,
+    0xd1027ffUL,
+    0xf010700UL,
+    0x11000000UL,
+    0x13000000UL,
+    0x15000000UL,
+    0x17000be0UL,
+    0x19000000UL,
+    0x1b000000UL,
+    0x1d000000UL,
+    0x1f000b60UL,
+    0x21130c51UL,
+    0x234ff41fUL,
+    0x25006f7bUL,
+    0x2d000490UL,
+    0x3b000480UL,
+    0x49000480UL,
+    0x57000480UL,
+    0x5911be0eUL,
+    0x5b3ef40aUL,
+    0x5d00f000UL,
+    0x5f787e1eUL,
+    0x61f5208aUL,
+    0x630000a4UL,
+    0x65000252UL,
+    0x67000080UL,
+    0x69000000UL,
+    0x6b000000UL,
+    0x6d000000UL,
+    0x6f093910UL,
+    0x7f000100UL,
+    0x8f000100UL,
+    0x9f000100UL,
+    0xad000000UL,
+    0xb7000000UL,
+    0xFFFFFFFF
 };
 #endif /* XENSIV_BGT60TRXX_CONF_IMPL */
 
@@ -231,16 +299,24 @@ static const uint32_t regs_utr11[] =
     0xc1000827
 };
 
+/*
+.num_samples_per_chirp = XENSIV_BGT60TRXX_CONF_NUM_SAMPLES_PER_CHIRP,
+.num_chirps_per_frame = XENSIV_BGT60TRXX_CONF_NUM_CHIRPS_PER_FRAME,
+.bandwidth_Hz = (ifx_Float_t)(459804000u), // XENSIV_BGT60TRXX_CONF_END_FREQ_HZ - XENSIV_BGT60TRXX_CONF_START_FREQ_HZ),
+.center_frequency_Hz = (ifx_Float_t)61250000000u,
+.orientation = IFX_ORIENTATION_LANDSCAPE,
+}
+*/
 direct_mode_description_t
 direct_device_default_mode_table[] =
 {
     {
         "landscape", "landscape using 460MHz of bandwidth",
-        .num_antennas = 2,
+        .num_antennas = 1,
         .regs = regs_landscape_460MHz,
         {
             .num_samples_per_chirp = 128,
-            .num_chirps_per_frame = 64,
+            .num_chirps_per_frame = 16,
             .bandwidth_Hz = (ifx_Float_t)460000000u,
             .center_frequency_Hz = (ifx_Float_t)61250000000u,
             .orientation = IFX_ORIENTATION_LANDSCAPE,

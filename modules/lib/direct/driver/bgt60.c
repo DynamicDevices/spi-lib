@@ -110,6 +110,8 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
     int reg_idx= 0;
     while (regs[reg_idx] != 0xFFFFFFFF) // 0xFFFFFFFF: only works for tr13C
     {
+        rep_msg("Writing: 0x%X = 0x%X\n",(regs[reg_idx] & BGT60_SPI_REGADR_MSK) >> BGT60_SPI_REGADR_POS, (regs[reg_idx] & BGT60_SPI_DATA_MSK) >> BGT60_SPI_DATA_POS);
+
         status = bgt60_set_reg(dev, (regs[reg_idx] & BGT60_SPI_REGADR_MSK) >> BGT60_SPI_REGADR_POS, (regs[reg_idx] & BGT60_SPI_DATA_MSK) >> BGT60_SPI_DATA_POS);
         if (status != 0)
         {
@@ -140,6 +142,23 @@ int32_t bgt60_init(bgt60_dev_t *const dev, const uint32_t *const regs)
     else
     {
         rep_msg("Failed to set the slice size !! \n");
+    }
+
+#warning FORCE slice size
+    dev->slice_size = 512;
+
+    if (status == BGT60_STATUS_OK)
+    {
+    	status = bgt60_get_reg(dev, 0x10, &tmp);
+        if (status == 0)
+        {
+            rep_msg("Read 0x10 = 0x%X \n", tmp);
+        }
+        else
+        {
+            dev->slice_size = 0;
+            rep_msg("ERROR reading reg 0x10 \n");
+        }
     }
 
     return status;

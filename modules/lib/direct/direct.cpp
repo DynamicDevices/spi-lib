@@ -98,6 +98,8 @@ static uint32_t get_num_samples_per_frame()
 
 static uint32_t get_num_slices_per_frame()
 {
+    rep_err("get_num_slices_per_frame: %d / %d\n", get_num_samples_per_frame(), radar.slice_size);
+
     return get_num_samples_per_frame() / (radar.slice_size * 2);
 }
 
@@ -121,14 +123,26 @@ static void read_frame_data(void)
     std::vector<uint16_t> frame_buffer(get_num_samples_per_frame());
     const uint32_t num_slices_per_frame = get_num_slices_per_frame();
 
+//    rep_err("read_frame_data: slices_per_frame = %d\n", num_slices_per_frame);
+
+//    rep_err("read_frame_data: antennas %d chirps_per_frame %d samples_per_chirp %d\n",
+//        radar.mode->num_antennas,
+//        radar.mode->seg_config.num_chirps_per_frame,
+//        radar.mode->seg_config.num_samples_per_chirp);
+
     for(size_t slice = 0; slice < num_slices_per_frame; slice++) 
     {
+//        rep_err("Wait interrupt\n");
+
         if(bgt60_platform_wait_interrupt() > 0 )
         {
             if (bgt60_get_fifo_data(&bgt60_dev, slice_data.data()) == 0)
             {
                 slice_data.data()[1] = slice_cnt & (num_slices_per_frame - 1);
                 *(uint16_t *)&slice_data.data()[2] = (slice_cnt / num_slices_per_frame) & 0xFFFF;
+         
+  //              rep_err("Rx data: %u\n", (uint16_t)((slice_cnt / num_slices_per_frame) & 0xFFFF ));
+
                 buffer_idx++;
                 slice_cnt++;
             }
@@ -146,7 +160,7 @@ static void read_frame_data(void)
 
     if(!radar.frame_buffer.try_push(frame_buffer))
     {
-        rep_err("Frame buffer overflow (size: %d fill: %d)\n",
+        rep_err("*** Frame buffer overflow (size: %d fill: %d)\n",
             radar.frame_buffer.size(), radar.frame_buffer.fill());
         radar.buffer_overflow = true;
     }
@@ -313,11 +327,13 @@ bool direct_device_start(const direct_mode_description_t *mode)
         return false;
     }
 
-    radar.frame_buffer.resize(5, [=](std::vector<uint16_t>& f)
+//    radar.frame_buffer.resize(5, [=](std::vector<uint16_t>& f)
+    radar.frame_buffer.resize((16*128), [=](std::vector<uint16_t>& f)
     {
-        f.resize(rx_antenna_count*
-            mode->seg_config.num_chirps_per_frame*
-            mode->seg_config.num_samples_per_chirp);
+//        f.resize(rx_antenna_count*
+//            mode->seg_config.num_chirps_per_frame*
+//            mode->seg_config.num_samples_per_chirp);
+        f.resize(16*128);
     });
 
     if(bgt60_frame_start(&bgt60_dev, true) != 0) {

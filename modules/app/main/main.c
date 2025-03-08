@@ -67,18 +67,34 @@ int main(int argc, char* argv[])
 {   
     int exitcode = EXIT_FAILURE;
 
+    rep_msg("rep_init()");
+
     rep_init();
+
+    rep_msg("acq_init()");
+
     acq_init();
+
+    rep_msg("record_init()");
+
     record_init();
+
+    rep_msg("app_parse_opts()");
 
     if(! app_parse_opts(argdesc, argc, argv))
         goto cleanup;
 
+    rep_msg("ifx_error_get()");
+
     if (ifx_error_get() != IFX_OK)
         goto cleanup;
 
+    rep_msg("record_start()");
+
     if (!record_start())
         goto cleanup;
+
+    rep_msg("acq_start()");
 
     if(!acq_start()) {
         rep_err("failed to start data acquisition\n");
@@ -127,23 +143,29 @@ int main(int argc, char* argv[])
 
         rep_mark_frame_processing_start();
 
-#if 0
+#if 1
         rep_msg("%f %f %f %f\n", 
             IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 2, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 3, 0)); 
-        /*rep_msg("%d %d %d\n", 
-            radar_data_frame->rows, 
-            radar_data_frame->cols, 
-            radar_data_frame->slices); */
+        rep_msg("Rows: %d Cols %d Slices %d\n", 
+            IFX_CUBE_ROWS(radar_data_frame), 
+            IFX_CUBE_COLS(radar_data_frame),
+            IFX_CUBE_SLICES(radar_data_frame));
 #endif
+
+        // Transform cube
+//        ifx_Cube_R_t* t_cube = ifx_cube_create_r(1,16,128);
 
         rep_msg("Analysis starting\n");
 
         ifx_Presence_Sensing_Result_t* result;
+
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 result);
+
+  //      ifx_cube_destroy_r(t_cube);
 
 //        rep_msg("Analysis done\n");
 
