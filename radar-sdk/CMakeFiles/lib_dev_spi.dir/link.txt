@@ -1,0 +1,2 @@
+/usr/bin/ar qc liblib_dev_spi.a CMakeFiles/lib_dev_spi.dir/modules/lib/dev_spi/bgt60_platform_rpi.c.o CMakeFiles/lib_dev_spi.dir/modules/lib/dev_spi/gpio.c.o CMakeFiles/lib_dev_spi.dir/modules/lib/dev_spi/spi.c.o
+/usr/bin/ranlib liblib_dev_spi.a

@@ -1,0 +1,15 @@
+build
+Debug
+Release
+GeneratedSource
+.cyignore
+.metadata
+*.tcl
+
+# cysecuretools generated files
+keys
+logs
+packets
+policy
+prebuilt
+.cysecuretools

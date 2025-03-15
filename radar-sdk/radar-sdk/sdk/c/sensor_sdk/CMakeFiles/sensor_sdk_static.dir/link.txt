@@ -1,0 +1,2 @@
+/usr/bin/ar qc ../../../bin/lib/libsensor_sdk_static.a CMakeFiles/sensor_sdk_static.dir/__/dummy.c.o
+/usr/bin/ranlib ../../../bin/lib/libsensor_sdk_static.a

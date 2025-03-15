@@ -1,0 +1,1 @@
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/seamless_dev_spi.dir/link.d CMakeFiles/seamless_dev_spi.dir/modules/app/main/main.c.o -o seamless_dev_spi  libapp_stump_lib.a liblib_acq_spi.a liblib_direct.a liblib_dev_spi.a -lpthread libapp_framework_lib.a -lsdk_base_obj
