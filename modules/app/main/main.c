@@ -28,6 +28,16 @@
 */
 
 #include <string.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <sched.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <poll.h>
+#include <time.h>
+#include <string.h>
+#include <errno.h>
 
 #include "interface/report.h"
 #include "interface/acquisition.h"
@@ -69,9 +79,26 @@ static const app_cmdarg_t *argdesc[] = {
     NULL
 };
 
+void set_realtime_prio(){
+    pthread_t this_thread = pthread_self(); // operates in the current running thread
+    struct sched_param params;
+    int ret;
+    
+    // set max prio 
+    params.sched_priority = sched_get_priority_max(SCHED_FIFO);    
+    ret = pthread_setschedparam(this_thread, SCHED_FIFO, &params);
+
+    if(ret != 0){
+	perror("Unsuccessful in setting thread realtime prio\n");
+    }
+
+}
+
 int main(int argc, char* argv[])
 {   
     int exitcode = EXIT_FAILURE;
+
+    set_realtime_prio();
 
     rep_init();
     acq_init();
@@ -141,7 +168,7 @@ int main(int argc, char* argv[])
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 2, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 3, 0));*/
-        
+
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 &result);
         rep_msg("Presence sensing result: %d %f\n", 

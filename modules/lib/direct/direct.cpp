@@ -149,7 +149,10 @@ static void read_frame_data(void)
                 rep_err("SPI fifo error\n");
                 radar.fifo_error = true;
             }
-        }
+        } else {
+		rep_err("*** Interrupt Timeout\n");
+	}
+
         unpack_raw12(
             slice_data.data() + radar.header_size,
             get_spi_transfer_size() - radar.header_size,

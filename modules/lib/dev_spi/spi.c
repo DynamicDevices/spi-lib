@@ -50,6 +50,7 @@ int spi_open(char const* device, spi_t* spi)
 	}
 
     status = ioctl(spi->fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi->speed_hz);
+    printf("SPI max speed is %u Hz\n", spi->speed_hz);
 
     return status;
 }
