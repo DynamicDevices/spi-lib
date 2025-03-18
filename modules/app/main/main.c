@@ -178,17 +178,20 @@ int main(int argc, char* argv[])
 
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 &result);
-        /*
+
+#if 0
         rep_msg("Presence sensing result: %d %f\n", 
             result.target_state, result.target_distance_m);
-        */
+#endif
 
+#if 1
 	// We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
         if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
           snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
           write(fifo_fd, buf, strlen(buf));
           close(fifo_fd);
 	}
+#endif
 
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
