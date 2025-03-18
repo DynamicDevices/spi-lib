@@ -37,12 +37,27 @@
 * Global Variables
 *******************************************************************************/
 
+#define IMX_GPIO_PIN(bank, pin) ((bank * 32) + (pin & 0x1f))
+
+#define BANK_RST 3
+#define BANK_IRQ 3
+
+#define PIN_RST 28
+#define PIN_IRQ 29
+
+#define INPUT 0
+#define OUTPUT 1
+
+#define LO 0
+#define HI 1
+
 const uint32_t MAX_BUF = 4096;
-const uint32_t BIG_MAX_BUF = 3*MAX_BUF;
+const uint32_t BIG_MAX_BUF = 3 * MAX_BUF;
+
 spi_t spi = {0};
 gpio_t gpio_int = {0};
 gpio_t gpio_rst = {0};
-char const* spi_dev = "/dev/spidev0.0";
+char const* spi_dev = "/dev/spidev1.0";
 
 /*******************************************************************************
  * Local functions
@@ -50,21 +65,21 @@ char const* spi_dev = "/dev/spidev0.0";
  
  int32_t bgt60_platform_init()
  {
-    int status = gpio_init(&gpio_int, 18, 0);
+    int status = gpio_init(&gpio_int, IMX_GPIO_PIN(BANK_IRQ, PIN_IRQ), INPUT);
     if(status < 0) {
-        rep_err("Failed init interrupt gpio (%d) \n", status);
+        rep_err("Failed init interrupt gpio pin (%d) \n", status);
         return status;
     }
 
-    status = gpio_init(&gpio_rst, 17, 1);
+    status = gpio_init(&gpio_rst, IMX_GPIO_PIN(BANK_RST, PIN_RST), OUTPUT);
     if(status < 0) {
-        rep_err("Failed init reset gpio (%d)\n", status);
+        rep_err("Failed init reset gpio pin (%d)\n", status);
         return status;
     }
 
-    status = gpio_write(&gpio_rst, 1);
+    status = gpio_write(&gpio_rst, HI);
     if(status < 0) {
-        rep_err("Failed set rst gpio (%d)\n", status);
+        rep_err("Failed set reset gpio state (%d)\n", status);
         return status;
     }
 
@@ -79,7 +94,7 @@ char const* spi_dev = "/dev/spidev0.0";
         rep_err("Failed read interrupt status (%d)\n", status);
         return status;
     }
-    
+
     return 0;
 }
 
