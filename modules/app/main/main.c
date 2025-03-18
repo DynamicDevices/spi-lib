@@ -39,6 +39,12 @@
 #include "ifxAvian/Avian.h"
 #include "ifxRadarPresenceSensing/PresenceSensing.h"
 
+typedef struct
+{
+    ifx_Presence_Sensing_t* handle;
+    ifx_Presence_Sensing_Result_t result;
+} presence_t;
+
 static uint32_t frame_limit = 0;
 
 static bool set_frames(int v) {
@@ -70,6 +76,7 @@ int main(int argc, char* argv[])
     rep_init();
     acq_init();
     record_init();
+    presence_t presence_ctx;
 
     if(! app_parse_opts(argdesc, argc, argv))
         goto cleanup;
@@ -86,7 +93,7 @@ int main(int argc, char* argv[])
     }
 
     install_abort_request_signal_handler();
-
+    
     // Presence implementation
 
     rep_msg("Setup presence sensing\n");
@@ -101,22 +108,19 @@ int main(int argc, char* argv[])
 
     rep_msg("Create\n");
 
-    presence_handle = ifx_presence_sensing_create(&sensor_config, &presence_config);    
+    presence_handle = ifx_presence_sensing_create(&sensor_config, &presence_config);   
 
     rep_msg("Create done\n");
-    
+
     ///////// implementation done
-
+    
     rep_mark_processing_start();
-
-
-    ifx_Presence_Sensing_Result_t* result;
-
+  
+    
     while (!abort_requested())
     {
+        ifx_Presence_Sensing_Result_t result;
         ifx_Cube_R_t *radar_data_frame = NULL;
-
-        printf("acq_fetch\n");
 
         if(!acq_fetch(&radar_data_frame)) {
             rep_err("Data source indicated an error when fetching data\n");
@@ -124,59 +128,25 @@ int main(int argc, char* argv[])
         }
         if(radar_data_frame == NULL) {
             // data source has no more data
-            printf("null frame\n");
             break;
         }
 
-        if(! record_radar_frame(radar_data_frame)) {
-            printf("record error\n");
+        if(! record_radar_frame(radar_data_frame))
             goto cleanup;
-        }
 
         rep_mark_frame_processing_start();
-        
-        ifx_Cube_R_t *radar_data_cube_frame = ifx_cube_create_r(1,16,128);
-        if(radar_data_cube_frame == NULL) {
-            rep_err("Failed to create radar data cube frame\n");
-            goto cleanup;
-        }
-
-        printf("Original frame rows: %d, cols: %d, slices: %d\n", IFX_CUBE_ROWS(radar_data_frame), IFX_CUBE_COLS(radar_data_frame), IFX_CUBE_SLICES(radar_data_frame));
-
-        /*rep_msg("%f %f %f %f", 
+        /*rep_msg("%d %d %d \n",radar_data_frame->shape[0],radar_data_frame->shape[1],radar_data_frame->shape[2]);
+        rep_msg("%f %f %f %f", 
             IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
             IFX_CUBE_AT(radar_data_frame, 0, 2, 0),
-            IFX_CUBE_AT(radar_data_frame, 0, 3, 0));*/ 
-        rep_msg("original cube: %f %f %f %f \n", 
-            IFX_CUBE_AT(radar_data_frame, 1, 0, 0), 
-            IFX_CUBE_AT(radar_data_frame, 1, 1, 0),
-            IFX_CUBE_AT(radar_data_frame, 1, 2, 0),
-            IFX_CUBE_AT(radar_data_frame, 1, 15, 100));
- 
-        for(int i = 0; i<16; i++){
-          for(int j = 0; j<128; j++){
-            IFX_CUBE_AT(radar_data_cube_frame, 0, i, j) = IFX_CUBE_AT(radar_data_frame, 1, i, j);
-          }  
-        }
-
-        // Adding this line prevents the segfault error!!!
-        printf("Done\n");
-
-        /*rep_msg("%d %d %d \n",radar_data_cube_frame->shape[0],radar_data_cube_frame->shape[1],radar_data_cube_frame->shape[2]);
-        rep_msg("copied cube %f %f %f %f \n", 
-            IFX_CUBE_AT(radar_data_cube_frame, 0, 0, 0), 
-            IFX_CUBE_AT(radar_data_cube_frame, 0, 1, 0),
-            IFX_CUBE_AT(radar_data_cube_frame, 0, 2, 0),
-            IFX_CUBE_AT(radar_data_cube_frame, 0, 3, 0));*/
+            IFX_CUBE_AT(radar_data_frame, 0, 3, 0));*/
         
-        ifx_presence_sensing_run(presence_handle, radar_data_cube_frame,
-                result);
+        ifx_presence_sensing_run(presence_handle, radar_data_frame,
+                &result);
         rep_msg("Presence sensing result: %d %f\n", 
-            result->target_state, result->target_distance_m);
-
-        ifx_cube_destroy_r(radar_data_cube_frame);
-
+            result.target_state, result.target_distance_m);
+            
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
             rep_msg("frame limit reached, aborting.\n");

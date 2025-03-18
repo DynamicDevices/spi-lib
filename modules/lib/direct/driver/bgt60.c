@@ -289,4 +289,3 @@ int32_t bgt60_enable_data_test_mode(bgt60_dev_t *const dev, bool enable)
     return status;
 
 }
-

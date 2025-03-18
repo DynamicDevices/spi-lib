@@ -50,6 +50,8 @@
 
 #include "PresenceSensing.h"
 #include "xensiv_radar_presence.h"
+#include "stdio.h"
+
 
 /*
 ==============================================================================
@@ -375,10 +377,10 @@ void ifx_presence_sensing_run(ifx_Presence_Sensing_t* handle, const ifx_Cube_R_t
     IFX_CUBE_BRK_VALID(frame_data);
     IFX_ERR_BRK_NULL(handle);
     IFX_ERR_BRK_NULL(result);
-
+    
     // Process raw data frame with artificially generated time stamp required by algo.
     handle->presence_time_stamp_ms += handle->frame_period_ms;
-
+    
     // extract one rx antenna out of cube
     if (IFX_CUBE_ROWS(frame_data) != 1)
     {
@@ -390,6 +392,8 @@ void ifx_presence_sensing_run(ifx_Presence_Sensing_t* handle, const ifx_Cube_R_t
         xensiv_radar_presence_process_frame(handle->xensiv_handle, frame_data->data, handle->presence_time_stamp_ms);
     }
 
+    /*printf("Presence sensing result: %d %f\n", 
+            presence_result.target_state, presence_result.range_bin * handle->distance_per_bin);*/
     // fill out the result structure
     result->target_state = presence_result.target_state;
     result->target_distance_m = presence_result.range_bin * handle->distance_per_bin;
