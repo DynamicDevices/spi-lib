@@ -38,6 +38,7 @@
 #include <time.h>
 #include <string.h>
 #include <errno.h>
+#include <sys/stat.h>
 
 #include "interface/report.h"
 #include "interface/acquisition.h"
@@ -48,6 +49,8 @@
 
 #include "ifxAvian/Avian.h"
 #include "ifxRadarPresenceSensing/PresenceSensing.h"
+
+#define FIFO_PATH "/tmp/presence"
 
 typedef struct
 {
@@ -97,6 +100,8 @@ void set_realtime_prio(){
 int main(int argc, char* argv[])
 {   
     int exitcode = EXIT_FAILURE;
+    int fifo_fd;
+    char buf [64];
 
     set_realtime_prio();
 
@@ -120,7 +125,7 @@ int main(int argc, char* argv[])
     }
 
     install_abort_request_signal_handler();
-    
+
     // Presence implementation
 
     rep_msg("Setup presence sensing\n");
@@ -140,10 +145,12 @@ int main(int argc, char* argv[])
     rep_msg("Create done\n");
 
     ///////// implementation done
-    
+
+    // Create FIFO
+    mkfifo(FIFO_PATH, 0666);
+
     rep_mark_processing_start();
   
-    
     while (!abort_requested())
     {
         ifx_Presence_Sensing_Result_t result;
@@ -171,9 +178,18 @@ int main(int argc, char* argv[])
 
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 &result);
+        /*
         rep_msg("Presence sensing result: %d %f\n", 
             result.target_state, result.target_distance_m);
-            
+        */
+
+	// We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
+        if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
+          snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
+          write(fifo_fd, buf, strlen(buf));
+          close(fifo_fd);
+	}
+
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
             rep_msg("frame limit reached, aborting.\n");
