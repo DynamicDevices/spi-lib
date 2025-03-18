@@ -27,6 +27,8 @@
 ** ===========================================================================
 */
 
+#include <stdio.h>
+
 #include "interface/acquisition.h"
 #include "interface/report.h"
 #include "driver/bgt60.h"
@@ -68,6 +70,10 @@ static uint32_t get_num_samples_per_frame();
 static uint32_t get_num_slices_per_frame();
 static uint32_t get_num_samples_per_slice();
 static uint32_t get_spi_transfer_size();
+
+int32_t bgt_get_main(uint32_t *pValue);
+int32_t bgt_get_fstat(uint32_t *pValue);
+int32_t bgt_reset_fifo();
 
 static void test_mode_lsfr_init()
 {
@@ -133,6 +139,21 @@ static void read_frame_data(void)
     std::vector<uint16_t> frame_buffer(get_num_samples_per_frame());
     const uint32_t num_slices_per_frame = get_num_slices_per_frame();
 
+    uint32_t value;
+    bgt_get_fstat(&value);
+    if(value & 1<<23)
+    {
+        printf("*** FIFO overflow 0x%08X\n", value);
+        bgt_reset_fifo();
+    }
+    if(value & 1<<19)
+    {
+        printf("*** FIFO underflow 0x%08X\n", value);
+        bgt_reset_fifo();
+    }
+//    bgt_get_main(&value);
+//    printf("MAIN:  0x%08x\n", value);
+
     for(size_t slice = 0; slice < num_slices_per_frame; slice++) 
     {
         if(bgt60_platform_wait_interrupt() > 0 )
@@ -150,6 +171,10 @@ static void read_frame_data(void)
                 radar.fifo_error = true;
             }
         }
+        else {
+            rep_err("Interrupt timed out\n");            
+        }
+
         unpack_raw12(
             slice_data.data() + radar.header_size,
             get_spi_transfer_size() - radar.header_size,
@@ -167,6 +192,7 @@ static void read_frame_data(void)
 static void spi_data_thread()
 {
     uint32_t cnt =0;
+
     while(radar.is_started)
     {
 	    read_frame_data();        
@@ -177,6 +203,7 @@ static bool radar_fetch_frame(ifx_Cube_R_t* frame)
 {
     const uint32_t samples_per_frame = get_num_samples_per_frame();
     std::vector<uint16_t> frame_buffer(samples_per_frame);
+
     if(radar.is_started)
     {
         radar.frame_buffer.wait_fill(1);
@@ -284,6 +311,52 @@ static bool setup_bgt(const direct_mode_description_t *mode)
     rep_msg("Assuming %u slices per frame\n", (unsigned)get_num_slices_per_frame());
 
     return true;
+}
+
+int32_t bgt_get_main(uint32_t *pValue)
+{
+    uint32_t value;
+
+    int32_t status = bgt60_get_reg(&bgt60_dev, BGT60_REG_MAIN, pValue);
+    if (status != 0)
+    {
+        rep_msg( "error getting state\n");
+    }
+    return status;
+}
+
+int32_t bgt_get_fstat(uint32_t *pValue)
+{
+    uint32_t value;
+
+    int32_t status = bgt60_get_reg(&bgt60_dev, BGT60_REG_FSTAT, pValue);
+    if (status != 0)
+    {
+        rep_msg( "error getting state\n");
+    }
+    return status;
+}
+
+int32_t bgt_reset_fifo()
+{
+    uint32_t value;
+
+    int32_t status = bgt60_set_reg(&bgt60_dev, BGT60_REG_MAIN, 1<<3);
+    if (status != 0)
+    {
+        rep_msg( "error resetting FIFO\n");
+    }
+    status = bgt60_set_reg(&bgt60_dev, BGT60_REG_MAIN, 1<<2);
+    if (status != 0)
+    {
+        rep_msg( "error resetting FIFO\n");
+    }
+    status = bgt60_set_reg(&bgt60_dev, BGT60_REG_MAIN, 1<<0);
+    if (status != 0)
+    {
+        rep_msg( "error resetting FIFO\n");
+    }
+    return status;
 }
 
 bool direct_device_start(const direct_mode_description_t *mode)

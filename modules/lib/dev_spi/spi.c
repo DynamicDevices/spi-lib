@@ -39,17 +39,23 @@ int spi_open(char const* device, spi_t* spi)
     if(spi->fd == -1)
         return -1;
 
-    if ((status = ioctl(spi->fd, SPI_IOC_WR_MODE, &spi->mode))  < 0) 
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_MODE, &spi->mode))  < 0) 
     {
+        printf("Error reading SPI mode\n");
         return status;
 	}
 
-    if ((status = ioctl(spi->fd, SPI_IOC_WR_BITS_PER_WORD, &spi->bits_per_word)) < 0) 
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_BITS_PER_WORD, &spi->bits_per_word)) < 0) 
     {
+        printf("Error reading SPI bits per word\n");
         return status;
 	}
 
-    status = ioctl(spi->fd, SPI_IOC_WR_MAX_SPEED_HZ, &spi->speed_hz);
+    if(status = ioctl(spi->fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi->speed_hz) < 0)
+    {
+        printf("Error reading SPI max speed\n");
+        return status;
+    }
 
     return status;
 }
@@ -57,6 +63,8 @@ int spi_open(char const* device, spi_t* spi)
 int spi_configure(spi_t* spi, uint32_t speed_hz, uint8_t bits_per_word, uint8_t mode)
 {
     int status;
+
+    printf("Configure SPI mode %d, bits per word %d, speed %d\n", mode, bits_per_word, speed_hz);
 
     if ((status = ioctl(spi->fd, SPI_IOC_WR_MODE, &mode))  < 0) 
     {
@@ -68,13 +76,33 @@ int spi_configure(spi_t* spi, uint32_t speed_hz, uint8_t bits_per_word, uint8_t 
     {
         return status;
 	}
+    
     spi->bits_per_word = bits_per_word;
-
     if ((status = ioctl(spi->fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed_hz)) < 0)
     {
         return status;
     }
     spi->speed_hz = speed_hz;
+
+    spi_t spi_check = {0};
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_MODE, &spi_check.mode))  < 0) 
+    {
+        printf("Error reading SPI mode\n");
+        return status;
+	}
+
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_BITS_PER_WORD, &spi_check.bits_per_word)) < 0) 
+    {
+        printf("Error reading SPI bits per word\n");
+        return status;
+	}
+
+    if(status = ioctl(spi->fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi_check.speed_hz) < 0)
+    {
+        printf("Error reading SPI max speed\n");
+        return status;
+    }
+    printf("Configured SPI mode %d, bits per word %d, speed %d\n", spi_check.mode, spi_check.bits_per_word, spi_check.speed_hz);
 
     return status;
 }

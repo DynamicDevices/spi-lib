@@ -116,23 +116,33 @@ int main(int argc, char* argv[])
     {
         ifx_Cube_R_t *radar_data_frame = NULL;
 
+        printf("acq_fetch\n");
+
         if(!acq_fetch(&radar_data_frame)) {
             rep_err("Data source indicated an error when fetching data\n");
             goto cleanup;
         }
         if(radar_data_frame == NULL) {
             // data source has no more data
+            printf("null frame\n");
             break;
         }
 
-        if(! record_radar_frame(radar_data_frame))
+        if(! record_radar_frame(radar_data_frame)) {
+            printf("record error\n");
             goto cleanup;
+        }
 
         rep_mark_frame_processing_start();
         
         ifx_Cube_R_t *radar_data_cube_frame = ifx_cube_create_r(1,16,128);
-        
-        
+        if(radar_data_cube_frame == NULL) {
+            rep_err("Failed to create radar data cube frame\n");
+            goto cleanup;
+        }
+
+        printf("Original frame rows: %d, cols: %d, slices: %d\n", IFX_CUBE_ROWS(radar_data_frame), IFX_CUBE_COLS(radar_data_frame), IFX_CUBE_SLICES(radar_data_frame));
+
         /*rep_msg("%f %f %f %f", 
             IFX_CUBE_AT(radar_data_frame, 0, 0, 0), 
             IFX_CUBE_AT(radar_data_frame, 0, 1, 0),
@@ -143,12 +153,16 @@ int main(int argc, char* argv[])
             IFX_CUBE_AT(radar_data_frame, 1, 1, 0),
             IFX_CUBE_AT(radar_data_frame, 1, 2, 0),
             IFX_CUBE_AT(radar_data_frame, 1, 15, 100));
+ 
         for(int i = 0; i<16; i++){
           for(int j = 0; j<128; j++){
             IFX_CUBE_AT(radar_data_cube_frame, 0, i, j) = IFX_CUBE_AT(radar_data_frame, 1, i, j);
           }  
         }
-        
+
+        // Adding this line prevents the segfault error!!!
+        printf("Done\n");
+
         /*rep_msg("%d %d %d \n",radar_data_cube_frame->shape[0],radar_data_cube_frame->shape[1],radar_data_cube_frame->shape[2]);
         rep_msg("copied cube %f %f %f %f \n", 
             IFX_CUBE_AT(radar_data_cube_frame, 0, 0, 0), 
@@ -160,6 +174,8 @@ int main(int argc, char* argv[])
                 result);
         rep_msg("Presence sensing result: %d %f\n", 
             result->target_state, result->target_distance_m);
+
+        ifx_cube_destroy_r(radar_data_cube_frame);
 
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {

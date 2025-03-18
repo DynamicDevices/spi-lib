@@ -131,7 +131,8 @@ int gpio_wait_interrupt(gpio_t* gpio)
     pfd.events = POLLPRI;
     pfd.revents = 0;
 
-    int r = poll(&pfd, 1, -1);
+//    int r = poll(&pfd, 1, -1);
+    int r = poll(&pfd, 1, 1000);
     gpio_read(gpio); // consume
 
     return r;
