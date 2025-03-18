@@ -39,17 +39,17 @@ int spi_open(char const* device, spi_t* spi)
     if(spi->fd == -1)
         return -1;
 
-    if ((status = ioctl(spi->fd, SPI_IOC_WR_MODE, &spi->mode))  < 0) 
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_MODE, &spi->mode))  < 0) 
     {
         return status;
 	}
 
-    if ((status = ioctl(spi->fd, SPI_IOC_WR_BITS_PER_WORD, &spi->bits_per_word)) < 0) 
+    if ((status = ioctl(spi->fd, SPI_IOC_RD_BITS_PER_WORD, &spi->bits_per_word)) < 0) 
     {
         return status;
 	}
 
-    status = ioctl(spi->fd, SPI_IOC_WR_MAX_SPEED_HZ, &spi->speed_hz);
+    status = ioctl(spi->fd, SPI_IOC_RD_MAX_SPEED_HZ, &spi->speed_hz);
 
     return status;
 }
