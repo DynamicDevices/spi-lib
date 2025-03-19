@@ -51,6 +51,7 @@
 #include "ifxRadarPresenceSensing/PresenceSensing.h"
 
 #define FIFO_PATH "/tmp/presence"
+#define FIFO_OUTPUT_INTERVAL_SECS 5.0f
 
 typedef struct
 {
@@ -102,6 +103,8 @@ int main(int argc, char* argv[])
     int exitcode = EXIT_FAILURE;
     int fifo_fd;
     char buf [64];
+    time_t start, end;
+    double elapsed;
 
     set_realtime_prio();
 
@@ -151,6 +154,8 @@ int main(int argc, char* argv[])
 
     rep_mark_processing_start();
   
+    time(&start);  /* start the FIFO output timer */
+
     while (!abort_requested())
     {
         ifx_Presence_Sensing_Result_t result;
@@ -185,11 +190,18 @@ int main(int argc, char* argv[])
 #endif
 
 #if 1
-	// We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
-        if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
-          snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
-          write(fifo_fd, buf, strlen(buf));
-          close(fifo_fd);
+        time(&end);
+        elapsed = difftime(end, start);
+        if (elapsed > FIFO_OUTPUT_INTERVAL_SECS) {
+            // Rese time
+            time(&start);
+         
+            // We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
+            if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
+            snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
+            write(fifo_fd, buf, strlen(buf));
+            close(fifo_fd);
+        }
 	}
 #endif
 
