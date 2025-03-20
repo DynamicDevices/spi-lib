@@ -105,7 +105,17 @@ int main(int argc, char* argv[])
     char buf [64];
     time_t start, end;
     double elapsed;
+    bool debugging = false;
 
+
+    char *debug = getenv("RADAR_DEBUG");
+    if(debug != NULL) {
+        if(!strcmp(getenv("RADAR_DEBUG"), "1")){
+            rep_msg("Debugging On\n");
+            debugging = true;
+        }
+    }
+    
     set_realtime_prio();
 
     rep_init();
@@ -153,7 +163,14 @@ int main(int argc, char* argv[])
     mkfifo(FIFO_PATH, 0666);
 
     rep_mark_processing_start();
-  
+
+    // Log startup status to FIFO
+    if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
+        snprintf(buf, sizeof(buf), "STATUS Starting up\n");
+        write(fifo_fd, buf, strlen(buf));
+        close(fifo_fd);
+    }
+
     time(&start);  /* start the FIFO output timer */
 
     while (!abort_requested())
@@ -184,26 +201,23 @@ int main(int argc, char* argv[])
         ifx_presence_sensing_run(presence_handle, radar_data_frame,
                 &result);
 
-#if 0
-        rep_msg("Presence sensing result: %d %f\n", 
-            result.target_state, result.target_distance_m);
-#endif
-
-#if 1
-        time(&end);
-        elapsed = difftime(end, start);
-        if (elapsed > FIFO_OUTPUT_INTERVAL_SECS) {
-            // Rese time
-            time(&start);
-         
-            // We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
-            if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
-            snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
-            write(fifo_fd, buf, strlen(buf));
-            close(fifo_fd);
+        if(debugging) {
+            rep_msg("%d %f\n", result.target_state, result.target_distance_m);
+        } else {
+            time(&end);
+            elapsed = difftime(end, start);
+            if (elapsed > FIFO_OUTPUT_INTERVAL_SECS) {
+                // Rese time
+                time(&start);
+            
+                // We reopen the FIFO each time here as we can't open it for non-blocking writes unless the reader already opened it non-blocking
+                if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
+                    snprintf(buf, sizeof(buf), "%d %f\n",  result.target_state, result.target_distance_m);
+                    write(fifo_fd, buf, strlen(buf));
+                    close(fifo_fd);
+                }
+            }
         }
-	}
-#endif
 
         // abort the application if a frame limit was specified and has been reached
         if ((frame_limit != 0) && (--frame_limit == 0)) {
@@ -219,5 +233,12 @@ cleanup:
     acq_deinit();
     rep_deinit();
 
+    // Log exit status to FIFO
+    if ((fifo_fd = open (FIFO_PATH, O_WRONLY | O_NONBLOCK)) >= 0) {
+        snprintf(buf, sizeof(buf), "STATUS App exit\n");
+        write(fifo_fd, buf, strlen(buf));
+        close(fifo_fd);
+    }
+    
     return exitcode;
 }

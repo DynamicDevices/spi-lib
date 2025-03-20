@@ -8,7 +8,8 @@
 		"files.associations": {
 			"commands_iradaravian.h": "c",
 			"avian.h": "c",
-			"dataavian.h": "c"
+			"dataavian.h": "c",
+			"app_argparse.h": "c"
 		}
 	}
 }
