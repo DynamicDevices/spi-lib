@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     time_t start, end;
     double elapsed;
     bool debugging = false;
-
+    float sensitivity_threshold = 0.5f;
 
     char *debug = getenv("RADAR_DEBUG");
     if(debug != NULL) {
@@ -115,7 +115,13 @@ int main(int argc, char* argv[])
             debugging = true;
         }
     }
-    
+
+    char *sensitivity = getenv("RADAR_SENSITIVITY");
+    if(sensitivity != NULL) {
+        sensitivity_threshold = atof(getenv("RADAR_SENSITIVITY"));
+    }
+    rep_msg("Using sensitivity setting %f\n", sensitivity_threshold);
+
     set_realtime_prio();
 
     rep_init();
@@ -151,6 +157,8 @@ int main(int argc, char* argv[])
 
     ifx_presence_sensing_get_config_defaults(IFX_AVIAN_BGT60TR13C, &sensor_config, &presence_config);
 
+    presence_config.sensitivity_threshold = sensitivity_threshold;
+  
     rep_msg("Create\n");
 
     presence_handle = ifx_presence_sensing_create(&sensor_config, &presence_config);   
