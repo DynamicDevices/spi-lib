@@ -106,10 +106,12 @@ int main(int argc, char* argv[])
     time_t start, end;
     double elapsed;
     bool debugging = false;
-    float sensitivity_threshold = 0.5f;
+    float sensitivity_threshold = 1.0f;
     float range_min = 0.2f;
-    float range_max = 4.5f;
+    float range_max = 7.0f;
 
+    rep_msg("Using alternate antenna for testing\n");
+    
     char *debug = getenv("RADAR_DEBUG");
     if(debug != NULL) {
         if(!strcmp(getenv("RADAR_DEBUG"), "1")){
