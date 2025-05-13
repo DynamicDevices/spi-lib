@@ -819,9 +819,9 @@ uint32_t DeviceMimoseRegisterConfigurator::getSystemClockRC(uint32_t reference_c
     size_t min_idx = 1000;
     for (size_t idx = 0; idx < m_rcTrimLut.size(); idx++)
     {
-        if (abs(m_rcTrimLut.at(idx) - rc_clock_factor) < min_diff)
+        if (std::abs(m_rcTrimLut.at(idx) - rc_clock_factor) < min_diff)
         {
-            min_diff = abs(m_rcTrimLut.at(idx) - rc_clock_factor);
+            min_diff = std::abs(m_rcTrimLut.at(idx) - rc_clock_factor);
             min_idx = idx;
         }
     }
