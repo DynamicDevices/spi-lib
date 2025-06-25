@@ -31,6 +31,48 @@
 #include <string.h>
 
 // Deepa
+static const uint32_t deepa1[] =
+{
+    0x11e8270UL,
+    0x3088210UL,
+    0x9e967fdUL,
+    0xb0805b4UL,
+    0xd102fffUL,
+    0xf010700UL,
+    0x11000000UL,
+    0x13000000UL,
+    0x15000000UL,
+    0x17000be0UL,
+    0x19000000UL,
+    0x1b000000UL,
+    0x1d000000UL,
+    0x1f000b60UL,
+    0x21133c51UL,
+    0x235ff41fUL,
+    0x25701ce7UL,
+    0x2d000490UL,
+    0x3b000480UL,
+    0x49000480UL,
+    0x57000480UL,
+    0x5911be0eUL,
+    0x5b4ccc0aUL,
+    0x5d00f000UL,
+    0x5f787e1eUL,
+    0x61f52089UL,
+    0x630000a4UL,
+    0x65000252UL,
+    0x67000080UL,
+    0x69000000UL,
+    0x6b000000UL,
+    0x6d000000UL,
+    0x6f093910UL,
+    0x7f000100UL,
+    0x8f000100UL,
+    0x9f000100UL,
+    0xad000000UL,
+    0xb7000000UL,
+    0xFFFFFFFFUL,
+};
 
 static const uint32_t presence[] =
 {
@@ -269,6 +311,18 @@ static const uint32_t regs_utr11[] =
 direct_mode_description_t
 direct_device_default_mode_table[] =
 {
+   {
+        "deepa1", "Deepa Settings 1",
+        .num_antennas = 2,
+        .regs = deepa1,
+        {
+            .num_samples_per_chirp = 128,
+            .num_chirps_per_frame = 16,
+            .bandwidth_Hz = (ifx_Float_t)459804000u,
+            .center_frequency_Hz = (ifx_Float_t)61250001000u,
+            .orientation = IFX_ORIENTATION_LANDSCAPE,
+        }
+    },
    {
         "presence", "landscape using 460MHz of bandwidth",
         .num_antennas = 2,
