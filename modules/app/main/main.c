@@ -98,7 +98,7 @@ void set_realtime_prio(){
 
 }
 
-int m_max_spi_hz = 25000000
+int m_max_spi_hz = 25000000;
 
 int main(int argc, char* argv[])
 {   
