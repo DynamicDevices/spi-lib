@@ -59,6 +59,8 @@ gpio_t gpio_int = {0};
 gpio_t gpio_rst = {0};
 char const* spi_dev = "/dev/spidev1.0";
 
+extern int m_max_spi_hz;
+
 /*******************************************************************************
  * Local functions
  */
@@ -122,8 +124,7 @@ int32_t bgt60_platform_spi_init(void)
     int status = spi_open(spi_dev, &spi);
 
     if(status == 0)
-        status = spi_configure(&spi, 16000000, 8, 0);
-//        status = spi_configure(&spi, 40000000, 8, 0);
+        status = spi_configure(&spi, m_max_spi_hz, 8, 0);
 
     return status;
 }

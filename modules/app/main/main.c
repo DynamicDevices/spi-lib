@@ -98,6 +98,8 @@ void set_realtime_prio(){
 
 }
 
+int m_max_spi_hz = 25000000
+
 int main(int argc, char* argv[])
 {   
     int exitcode = EXIT_FAILURE;
@@ -119,6 +121,12 @@ int main(int argc, char* argv[])
             debugging = true;
         }
     }
+
+    char *spi_speed_hz = getenv("RADAR_SPI_SPEED");
+    if(spi_speed_hz != NULL) {
+        m_max_spi_hz = atof(getenv("RADAR_SPI_SPEED"));
+    }
+    rep_msg("Using max SPI speed %f\n", m_max_spi_hz);
 
     char *sensitivity = getenv("RADAR_SENSITIVITY");
     if(sensitivity != NULL) {
