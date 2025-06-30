@@ -124,9 +124,9 @@ int main(int argc, char* argv[])
 
     char *spi_speed_hz = getenv("RADAR_SPI_SPEED");
     if(spi_speed_hz != NULL) {
-        m_max_spi_hz = atof(getenv("RADAR_SPI_SPEED"));
+        m_max_spi_hz = atoi(getenv("RADAR_SPI_SPEED"));
     }
-    rep_msg("Using max SPI speed %f\n", m_max_spi_hz);
+    rep_msg("SPI speed %d\n", m_max_spi_hz);
 
     char *sensitivity = getenv("RADAR_SENSITIVITY");
     if(sensitivity != NULL) {
